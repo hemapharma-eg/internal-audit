@@ -27,7 +27,228 @@ import {
 
 // --- Base Data Extraction ---
 const rawInitialData = [
-...
+  {
+    id: "d1",
+    title: "Domain 1: Governance, Quality Assurance & Institutional Effectiveness",
+    audits: [
+      {
+        id: "a1.1",
+        title: "Audit 1.1: Quality Assurance & Accreditation Readiness Review",
+        target: "Vice Chancellor – Quality Assurance and Institutional Effectiveness",
+        risk: "High",
+        checklist: [
+          { id: "c1.1.1", text: "Review CAA and international accreditation compliance gap analysis reports and verify completion status of corrective action plans." },
+          { id: "c1.1.2", text: "Sample the Program Review process: Verify that curriculum updates actively map to industry requirements, alumni feedback, and employer advisory boards." },
+          { id: "c1.1.3", text: "Audit the Policy Lifecycle: Check for recent reviews, formal approvals, proper version control, and dissemination of policies via the Policies Specialist." },
+          { id: "c1.1.4", text: "Validate Institutional Research data integrity: Trace reported institutional metrics back to raw source systems to ensure zero manipulation." },
+          { id: "c1.1.5", text: "Review the integration of the Strategic Planning Committee’s multi-year goals with departmental annual KPIs and budget allocations." },
+          { id: "c1.1.6", text: "Assess the 'Closing the Loop' process: Verify that student end-of-course evaluations directly inform tangible changes in syllabi or teaching methods." },
+          { id: "c1.1.7", text: "Evaluate Peer Review of Teaching logs to ensure continuous pedagogical improvement is enforced across all academic departments." },
+          { id: "c1.1.8", text: "Review the execution and outcomes of internal 'Mock Accreditation' visits." }
+        ]
+      },
+      {
+        id: "a1.2",
+        title: "Audit 1.2: Enterprise Governance & Committee Effectiveness",
+        target: "Board of Trustees, Chancellor's Office, University Council, Legal Advisor",
+        risk: "Medium",
+        checklist: [
+          { id: "c1.2.1", text: "Review meeting minutes, agendas, and quorum records for the University Council, Deans Council, and Board of Trustees for the past 12 months." },
+          { id: "c1.2.2", text: "Verify the existence, annual updating, and secure storage of Conflict of Interest (COI) and Non-Disclosure declarations for all board and council members." },
+          { id: "c1.2.3", text: "Assess the Delegation of Authority (DOA) matrix: Verify that actual financial, operational, and academic authorizations map correctly to the documented DOA." },
+          { id: "c1.2.4", text: "Review external legal counsel engagement logs, contract review turnaround times, and pending litigation/risk reports filed by the Legal Advisor." },
+          { id: "c1.2.5", text: "Audit the tracking mechanism for Board and Council resolutions to ensure mandated actions are executed within the specified timeframes." },
+          { id: "c1.2.6", text: "Verify the implementation of a formal onboarding and training process for newly appointed Board of Trustees members." }
+        ]
+      },
+      {
+        id: "a1.3",
+        title: "Audit 1.3: Enterprise Risk Management (ERM) & Compliance Framework",
+        target: "Audit, Risk & Compliance Committee, Compliance Office",
+        risk: "High",
+        checklist: [
+          { id: "c1.3.1", text: "Review the University Risk Register for completeness, updated risk scorings, assigned risk owners, and realistic mitigation timelines." },
+          { id: "c1.3.2", text: "Audit the monitoring process for external regulatory changes (e.g., changes in DHA licensing requirements)." },
+          { id: "c1.3.3", text: "Verify the operational effectiveness of the university's anonymous whistleblower hotline, including anonymity protections." },
+          { id: "c1.3.4", text: "Assess the integration of the ERM framework with the university's Business Continuity Planning (BCP) and crisis management strategies." },
+          { id: "c1.3.5", text: "Test a sample of 'High Risk' mitigation controls defined in the Risk Register to ensure they are functioning effectively in practice." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "d2",
+    title: "Domain 2: Academic Affairs & Student Lifecycle",
+    audits: [
+      {
+        id: "a2.1",
+        title: "Audit 2.1: College Operations & Clinical Affairs Management",
+        target: "Deans of Medicine, Pharmacy, Nursing; Associate Deans of Clinical Affairs",
+        risk: "High",
+        checklist: [
+          { id: "c2.1.1", text: "Sample faculty workload distribution: Ensure strict compliance with UAE higher education teaching credit limits vs. protected research/clinical time." },
+          { id: "c2.1.2", text: "Review clinical rotation scheduling: Verify active, legally vetted affiliation agreements with partner hospitals/clinics." },
+          { id: "c2.1.3", text: "Audit student clinical attendance logs and preceptor evaluation forms for authenticity and timely submission." },
+          { id: "c2.1.4", text: "Evaluate the operational standards of Objective Structured Clinical Examinations (OSCEs), including standardized patient training and grading moderation." },
+          { id: "c2.1.5", text: "Verify that faculty maintain documented, reliable 'Office Hours' for student consultation." },
+          { id: "c2.1.6", text: "Assess the operations of the Head of Medical Education Department regarding faculty development programs." },
+          { id: "c2.1.7", text: "Review the processes used by Assistant Deans of Quality to standardize assessments and syllabi across multi-section courses." }
+        ]
+      },
+      {
+        id: "a2.2",
+        title: "Audit 2.2: Admissions, Registration & Scholarship Integrity",
+        target: "Director of Admissions & Registration, Registrar, Scholarship Committee",
+        risk: "Critical",
+        checklist: [
+          { id: "c2.2.1", text: "Sample admitted student files: Verify EmSAT scores, high school equivalencies, and prerequisite science grades meet exact CAA requirements." },
+          { id: "c2.2.2", text: "Audit 'Conditional Admissions': Ensure students meet conditions within the mandated timeframe or are dismissed." },
+          { id: "c2.2.3", text: "Review transfer credit evaluations for compliance with university policy." },
+          { id: "c2.2.4", text: "Audit the Scholarship Committee: Re-calculate a sample of 30 scholarship awards to ensure they match published criteria." },
+          { id: "c2.2.5", text: "Verify the enforcement of scholarship renewal criteria and audit the revocation process for underperforming scholars." },
+          { id: "c2.2.6", text: "Audit recruitment agency contracts and sample commission payouts to ensure alignment with enrolled student retention data." },
+          { id: "c2.2.7", text: "Inspect physical and digital security controls surrounding the issuance of official transcripts and certificates." }
+        ]
+      },
+      {
+        id: "a2.3",
+        title: "Audit 2.3: Student Well-being, Success & Engagement",
+        target: "Dean – Student Affairs, Student Wellbeing Specialist, Career Services",
+        risk: "Medium",
+        checklist: [
+          { id: "c2.3.1", text: "Review confidentiality protocols, secure record-keeping, and emergency escalation procedures for counseling sessions." },
+          { id: "c2.3.2", text: "Evaluate counseling wait times and the ratio of mental health professionals to the student population." },
+          { id: "c2.3.3", text: "Audit Student Success Centers: Review metrics on early-warning student interventions and academic probation tracking." },
+          { id: "c2.3.4", text: "Audit Student Club finances: Review annual budgets, individual expense approvals, and post-event financial reconciliations." },
+          { id: "c2.3.5", text: "Review the centralized tracking, handling, and resolution timelines of formalized student grievances and academic appeals." },
+          { id: "c2.3.6", text: "Assess the effectiveness of Career Services by verifying graduate employability tracking methodologies." },
+          { id: "c2.3.7", text: "Evaluate campus accessibility and accommodation provisions for students with documented disabilities." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "d3",
+    title: "Domain 3: Academic Support & Technological Infrastructure",
+    audits: [
+      {
+        id: "a3.1",
+        title: "Audit 3.1: Academic Support Technologies & SIS Integrity",
+        target: "Head of Academic Support Department, Head of AI & Smart Education",
+        risk: "Critical",
+        checklist: [
+          { id: "c3.1.1", text: "Review formal User Access Reviews (UAR) for the SIS: Ensure RBAC is strictly enforced." },
+          { id: "c3.1.2", text: "Audit system audit trails: Extract a report of manual grade changes and trace 100% of high-risk changes back to approved forms." },
+          { id: "c3.1.3", text: "Test API integrations between the SIS, the LMS, and the Finance module to ensure data synchronization accuracy." },
+          { id: "c3.1.4", text: "Evaluate Examination Unit protocols: Review exam paper drafting security, physical printing/vault controls, and chain-of-custody." },
+          { id: "c3.1.5", text: "Assess digital examination security: Review configurations of lockdown browsers and digital proctoring software." },
+          { id: "c3.1.6", text: "Assess AI & Smart Education governance: Review institutional policies on student use of Generative AI and plagiarism detection software." },
+          { id: "c3.1.7", text: "Audit Academic Integrity violation logs to identify trends in AI-assisted plagiarism." }
+        ]
+      },
+      {
+        id: "a3.2",
+        title: "Audit 3.2: Clinical Simulation Center & Learning Resources",
+        target: "Head of Simulation Center, Head of Learning Resource Center",
+        risk: "Medium",
+        checklist: [
+          { id: "c3.2.1", text: "Review preventative maintenance schedules and calibration logs for high-fidelity medical simulation mannequins." },
+          { id: "c3.2.2", text: "Assess inventory management for consumable medical supplies in the simulation center to prevent stock-outs." },
+          { id: "c3.2.3", text: "Evaluate simulation debriefing protocols: Ensure faculty are conducting mandated post-simulation debriefings and securely storing videos." },
+          { id: "c3.2.4", text: "Audit the Learning Resource Center: Review digital journal subscription utilization rates versus cost." },
+          { id: "c3.2.5", text: "Assess the process for acquiring new medical textbooks and databases based on faculty requests." },
+          { id: "c3.2.6", text: "Verify copyright compliance mechanisms for materials uploaded to the university's LMS by faculty." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "d4",
+    title: "Domain 4: Shared Services (Financial, HR, IT, Operations)",
+    audits: [
+      {
+        id: "a4.1",
+        title: "Audit 4.1: Financial Management, Procurement & Revenue Cycle",
+        target: "Shared Services (Finance Manager, Operations Manager)",
+        risk: "High",
+        checklist: [
+          { id: "c4.1.1", text: "Test the 'Three-Way Match': Sample 50 high-value payments to ensure POs, Receiving Reports, and Invoices align." },
+          { id: "c4.1.2", text: "Review Vendor Onboarding: Check for competitive bidding documentation and vendor conflict-of-interest screening." },
+          { id: "c4.1.3", text: "Audit Capital Expenditure (CapEx): Verify major purchases are tracked against budgets and asset-tagged." },
+          { id: "c4.1.4", text: "Analyze tuition fee collection: Review aging accounts receivable, late fees, and uncollectible debt write-off approvals." },
+          { id: "c4.1.5", text: "Audit Petty Cash handling: Conduct surprise cash counts and review replenishment vouchers." },
+          { id: "c4.1.6", text: "Review employee travel and expense reimbursement claims for adherence to policy." },
+          { id: "c4.1.7", text: "Audit monthly/quarterly Budget vs. Actual reporting submitted to the University Council." }
+        ]
+      },
+      {
+        id: "a4.2",
+        title: "Audit 4.2: Information Technology Security & Data Privacy",
+        target: "Shared Services (IT Department)",
+        risk: "Critical",
+        checklist: [
+          { id: "c4.2.1", text: "Review results and remediation plans of the latest internal/external network penetration tests." },
+          { id: "c4.2.2", text: "Audit IT user lifecycle management: Sample terminated employees to verify immediate access revocation." },
+          { id: "c4.2.3", text: "Review Data Backup and Disaster Recovery (DR): Require documented evidence of successful full-system restoration tests." },
+          { id: "c4.2.4", text: "Assess compliance with UAE PDPL and healthcare data laws regarding the storage, encryption, and transmission of student/clinical data." },
+          { id: "c4.2.5", text: "Audit Third-Party Vendor Risk: Review SOC 2 reports for critical cloud service providers." },
+          { id: "c4.2.6", text: "Evaluate physical security controls of the primary server room." },
+          { id: "c4.2.7", text: "Review the results of employee phishing simulation campaigns and mandatory training completion." }
+        ]
+      },
+      {
+        id: "a4.3",
+        title: "Audit 4.3: Human Resources & Faculty Credentialing",
+        target: "Shared Services (Senior HR Executive)",
+        risk: "High",
+        checklist: [
+          { id: "c4.3.1", text: "Primary Source Verification (PSV): Sample medical faculty files to ensure degrees and DHA/MOHAP licenses are validated via primary sources." },
+          { id: "c4.3.2", text: "Review onboarding checklists: Ensure background checks and safeguarding training are completed before the start date." },
+          { id: "c4.3.3", text: "Audit payroll processing: Reconcile payroll records against the master employee list to check for ghost employees or unauthorized allowances." },
+          { id: "c4.3.4", text: "Evaluate the administration and completion rates of the annual performance appraisal process." },
+          { id: "c4.3.5", text: "Audit the Faculty Promotion Committee process: Verify promotions follow documented criteria." },
+          { id: "c4.3.6", text: "Review exit interview data to identify systemic trends regarding staff turnover." },
+          { id: "c4.3.7", text: "Verify the tracking and enforcement of mandatory Continuing Medical Education (CME) credits for clinical faculty." }
+        ]
+      },
+      {
+        id: "a4.4",
+        title: "Audit 4.4: Facilities Management, HSE & PR",
+        target: "Shared Services (Operations Manager, Marketing & PR, HSE Officer)",
+        risk: "Medium",
+        checklist: [
+          { id: "c4.4.1", text: "Check biohazard and sharps disposal protocols: Ensure contracts with certified vendors are active and logs are maintained." },
+          { id: "c4.4.2", text: "Verify the completion of mandatory emergency response, chemical spill, and fire safety drills." },
+          { id: "c4.4.3", text: "Audit preventative maintenance schedules for critical campus infrastructure (HVAC, labs)." },
+          { id: "c4.4.4", text: "Review Security Guard contract SLAs and audit physical access logs/CCTV coverage for sensitive areas." },
+          { id: "c4.4.5", text: "Audit Marketing & PR: Review public-facing materials to ensure claims regarding university rankings are factually accurate." },
+          { id: "c4.4.6", text: "Evaluate the university's environmental sustainability initiatives against stated institutional goals." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "d5",
+    title: "Domain 5: Research & Post-Graduate Education",
+    audits: [
+      {
+        id: "a5.1",
+        title: "Audit 5.1: Research Ethics, Grant Management & IP",
+        target: "Vice Chancellor – Research & Post Graduate Education, IRB, IP Specialist",
+        risk: "High",
+        checklist: [
+          { id: "c5.1.1", text: "Audit the IRB Process: Sample active clinical research projects to ensure formal IRB approval was granted prior to patient/data collection." },
+          { id: "c5.1.2", text: "Review Conflict of Interest (COI) declarations specific to researchers." },
+          { id: "c5.1.3", text: "Review Grant Financial Management: Trace expenditures to ensure funds are used strictly for intended research purposes." },
+          { id: "c5.1.4", text: "Audit grant milestone reporting to ensure researchers are meeting deliverables required by external funding agencies." },
+          { id: "c5.1.5", text: "Assess Intellectual Property controls: Review the workflow for declaring new inventions and filing patents." },
+          { id: "c5.1.6", text: "Evaluate Graduate Education: Verify that post-graduate admissions criteria are strictly followed." },
+          { id: "c5.1.7", text: "Review the composition of graduate thesis defense committees to ensure neutrality and required expertise." },
+          { id: "c5.1.8", text: "Verify the mandatory use of advanced plagiarism detection tools on all final graduate theses prior to defense." }
+        ]
+      }
+    ]
+  }
 ];
 
 // Enrich data with advanced fields
