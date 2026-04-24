@@ -292,6 +292,15 @@ export default function App() {
   const isAuthenticated = !!session;
   const isAdmin = userRole === 'admin';
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const isPublicReport = searchParams.get('public') === 'true';
+
+  useEffect(() => {
+    if (isPublicReport) {
+      setActiveTab('report');
+    }
+  }, [isPublicReport]);
+
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
   
@@ -352,7 +361,7 @@ export default function App() {
 
   // 1. Initial Load from Supabase (with fallback to local data)
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !isPublicReport) {
       setLoading(false);
       return;
     }
@@ -390,7 +399,7 @@ export default function App() {
 
   // 2. Save function
   const saveToSupabase = async (currentData) => {
-    if (!isAdmin) return;
+    if (!isAuthenticated) return; // Prevent public visitors from saving, but allow all logged-in users (admins + viewers) to save
 
     try {
       const { error } = await supabase
@@ -531,9 +540,9 @@ export default function App() {
   };
 
   const handleShareLink = () => {
-    const liveUrl = `${window.location.origin}${window.location.pathname}`;
+    const liveUrl = `${window.location.origin}${window.location.pathname}?public=true`;
     navigator.clipboard.writeText(liveUrl);
-    triggerToast("Live report link copied to clipboard!");
+    triggerToast("Public report link copied to clipboard!");
   };
 
   // Color Helpers (must be before any early returns)
@@ -649,7 +658,7 @@ export default function App() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isPublicReport) {
     return (
       <div className="fixed inset-0 w-full h-full bg-slate-900 flex items-center justify-center p-4 z-[9999]">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
@@ -729,9 +738,10 @@ export default function App() {
         </div>
       )}
 
-      {/* Sidebar - Hidden on Print */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col print:hidden">
-        <div className="p-6 border-b border-slate-800">
+      {/* Sidebar - Hidden on Print and Public Report */}
+      {!isPublicReport && (
+        <aside className="w-64 bg-slate-900 text-white flex flex-col print:hidden">
+          <div className="p-6 border-b border-slate-800">
           <div className="flex items-center space-x-2 text-xl font-bold mb-1">
             <Building className="w-6 h-6 text-blue-400" />
             <span>DMU Audit</span>
@@ -795,7 +805,8 @@ export default function App() {
             </select>
           </div>
         </div>
-      </aside>
+        </aside>
+      )}
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto bg-gray-50 print:bg-white print:w-full print:absolute print:left-0 print:top-0">
@@ -978,7 +989,7 @@ export default function App() {
                                       <div className="flex-shrink-0 w-full md:w-44">
                                         <select
                                           value={item.status}
-                                          disabled={!isAdmin}
+                                          disabled={!isAuthenticated}
                                           onChange={(e) => updateItem(domain.id, audit.id, item.id, 'status', e.target.value)}
                                           className={`w-full text-sm font-semibold rounded p-2 border outline-none cursor-pointer ${getStatusColor(item.status)} disabled:opacity-80 disabled:cursor-not-allowed`}
                                         >
