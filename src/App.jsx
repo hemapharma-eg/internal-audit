@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { supabase } from './supabaseClient';
 import { 
   LayoutDashboard, 
   ClipboardCheck, 
@@ -18,233 +19,15 @@ import {
   Edit3,
   Filter,
   Trash2,
-  Plus
+  Plus,
+  Lock,
+  User,
+  LogOut
 } from 'lucide-react';
 
 // --- Base Data Extraction ---
 const rawInitialData = [
-  {
-    id: "d1",
-    title: "Domain 1: Governance, Quality Assurance & Institutional Effectiveness",
-    audits: [
-      {
-        id: "a1.1",
-        title: "Audit 1.1: Quality Assurance & Accreditation Readiness Review",
-        target: "Vice Chancellor – Quality Assurance and Institutional Effectiveness",
-        risk: "High",
-        checklist: [
-          { id: "c1.1.1", text: "Review CAA and international accreditation compliance gap analysis reports and verify completion status of corrective action plans." },
-          { id: "c1.1.2", text: "Sample the Program Review process: Verify that curriculum updates actively map to industry requirements, alumni feedback, and employer advisory boards." },
-          { id: "c1.1.3", text: "Audit the Policy Lifecycle: Check for recent reviews, formal approvals, proper version control, and dissemination of policies via the Policies Specialist." },
-          { id: "c1.1.4", text: "Validate Institutional Research data integrity: Trace reported institutional metrics back to raw source systems to ensure zero manipulation." },
-          { id: "c1.1.5", text: "Review the integration of the Strategic Planning Committee’s multi-year goals with departmental annual KPIs and budget allocations." },
-          { id: "c1.1.6", text: "Assess the 'Closing the Loop' process: Verify that student end-of-course evaluations directly inform tangible changes in syllabi or teaching methods." },
-          { id: "c1.1.7", text: "Evaluate Peer Review of Teaching logs to ensure continuous pedagogical improvement is enforced across all academic departments." },
-          { id: "c1.1.8", text: "Review the execution and outcomes of internal 'Mock Accreditation' visits." }
-        ]
-      },
-      {
-        id: "a1.2",
-        title: "Audit 1.2: Enterprise Governance & Committee Effectiveness",
-        target: "Board of Trustees, Chancellor's Office, University Council, Legal Advisor",
-        risk: "Medium",
-        checklist: [
-          { id: "c1.2.1", text: "Review meeting minutes, agendas, and quorum records for the University Council, Deans Council, and Board of Trustees for the past 12 months." },
-          { id: "c1.2.2", text: "Verify the existence, annual updating, and secure storage of Conflict of Interest (COI) and Non-Disclosure declarations for all board and council members." },
-          { id: "c1.2.3", text: "Assess the Delegation of Authority (DOA) matrix: Verify that actual financial, operational, and academic authorizations map correctly to the documented DOA." },
-          { id: "c1.2.4", text: "Review external legal counsel engagement logs, contract review turnaround times, and pending litigation/risk reports filed by the Legal Advisor." },
-          { id: "c1.2.5", text: "Audit the tracking mechanism for Board and Council resolutions to ensure mandated actions are executed within the specified timeframes." },
-          { id: "c1.2.6", text: "Verify the implementation of a formal onboarding and training process for newly appointed Board of Trustees members." }
-        ]
-      },
-      {
-        id: "a1.3",
-        title: "Audit 1.3: Enterprise Risk Management (ERM) & Compliance Framework",
-        target: "Audit, Risk & Compliance Committee, Compliance Office",
-        risk: "High",
-        checklist: [
-          { id: "c1.3.1", text: "Review the University Risk Register for completeness, updated risk scorings, assigned risk owners, and realistic mitigation timelines." },
-          { id: "c1.3.2", text: "Audit the monitoring process for external regulatory changes (e.g., changes in DHA licensing requirements)." },
-          { id: "c1.3.3", text: "Verify the operational effectiveness of the university's anonymous whistleblower hotline, including anonymity protections." },
-          { id: "c1.3.4", text: "Assess the integration of the ERM framework with the university's Business Continuity Planning (BCP) and crisis management strategies." },
-          { id: "c1.3.5", text: "Test a sample of 'High Risk' mitigation controls defined in the Risk Register to ensure they are functioning effectively in practice." }
-        ]
-      }
-    ]
-  },
-  {
-    id: "d2",
-    title: "Domain 2: Academic Affairs & Student Lifecycle",
-    audits: [
-      {
-        id: "a2.1",
-        title: "Audit 2.1: College Operations & Clinical Affairs Management",
-        target: "Deans of Medicine, Pharmacy, Nursing; Associate Deans of Clinical Affairs",
-        risk: "High",
-        checklist: [
-          { id: "c2.1.1", text: "Sample faculty workload distribution: Ensure strict compliance with UAE higher education teaching credit limits vs. protected research/clinical time." },
-          { id: "c2.1.2", text: "Review clinical rotation scheduling: Verify active, legally vetted affiliation agreements with partner hospitals/clinics." },
-          { id: "c2.1.3", text: "Audit student clinical attendance logs and preceptor evaluation forms for authenticity and timely submission." },
-          { id: "c2.1.4", text: "Evaluate the operational standards of Objective Structured Clinical Examinations (OSCEs), including standardized patient training and grading moderation." },
-          { id: "c2.1.5", text: "Verify that faculty maintain documented, reliable 'Office Hours' for student consultation." },
-          { id: "c2.1.6", text: "Assess the operations of the Head of Medical Education Department regarding faculty development programs." },
-          { id: "c2.1.7", text: "Review the processes used by Assistant Deans of Quality to standardize assessments and syllabi across multi-section courses." }
-        ]
-      },
-      {
-        id: "a2.2",
-        title: "Audit 2.2: Admissions, Registration & Scholarship Integrity",
-        target: "Director of Admissions & Registration, Registrar, Scholarship Committee",
-        risk: "Critical",
-        checklist: [
-          { id: "c2.2.1", text: "Sample admitted student files: Verify EmSAT scores, high school equivalencies, and prerequisite science grades meet exact CAA requirements." },
-          { id: "c2.2.2", text: "Audit 'Conditional Admissions': Ensure students meet conditions within the mandated timeframe or are dismissed." },
-          { id: "c2.2.3", text: "Review transfer credit evaluations for compliance with university policy." },
-          { id: "c2.2.4", text: "Audit the Scholarship Committee: Re-calculate a sample of 30 scholarship awards to ensure they match published criteria." },
-          { id: "c2.2.5", text: "Verify the enforcement of scholarship renewal criteria and audit the revocation process for underperforming scholars." },
-          { id: "c2.2.6", text: "Audit recruitment agency contracts and sample commission payouts to ensure alignment with enrolled student retention data." },
-          { id: "c2.2.7", text: "Inspect physical and digital security controls surrounding the issuance of official transcripts and certificates." }
-        ]
-      },
-      {
-        id: "a2.3",
-        title: "Audit 2.3: Student Well-being, Success & Engagement",
-        target: "Dean – Student Affairs, Student Wellbeing Specialist, Career Services",
-        risk: "Medium",
-        checklist: [
-          { id: "c2.3.1", text: "Review confidentiality protocols, secure record-keeping, and emergency escalation procedures for counseling sessions." },
-          { id: "c2.3.2", text: "Evaluate counseling wait times and the ratio of mental health professionals to the student population." },
-          { id: "c2.3.3", text: "Audit Student Success Centers: Review metrics on early-warning student interventions and academic probation tracking." },
-          { id: "c2.3.4", text: "Audit Student Club finances: Review annual budgets, individual expense approvals, and post-event financial reconciliations." },
-          { id: "c2.3.5", text: "Review the centralized tracking, handling, and resolution timelines of formalized student grievances and academic appeals." },
-          { id: "c2.3.6", text: "Assess the effectiveness of Career Services by verifying graduate employability tracking methodologies." },
-          { id: "c2.3.7", text: "Evaluate campus accessibility and accommodation provisions for students with documented disabilities." }
-        ]
-      }
-    ]
-  },
-  {
-    id: "d3",
-    title: "Domain 3: Academic Support & Technological Infrastructure",
-    audits: [
-      {
-        id: "a3.1",
-        title: "Audit 3.1: Academic Support Technologies & SIS Integrity",
-        target: "Head of Academic Support Department, Head of AI & Smart Education",
-        risk: "Critical",
-        checklist: [
-          { id: "c3.1.1", text: "Review formal User Access Reviews (UAR) for the SIS: Ensure RBAC is strictly enforced." },
-          { id: "c3.1.2", text: "Audit system audit trails: Extract a report of manual grade changes and trace 100% of high-risk changes back to approved forms." },
-          { id: "c3.1.3", text: "Test API integrations between the SIS, the LMS, and the Finance module to ensure data synchronization accuracy." },
-          { id: "c3.1.4", text: "Evaluate Examination Unit protocols: Review exam paper drafting security, physical printing/vault controls, and chain-of-custody." },
-          { id: "c3.1.5", text: "Assess digital examination security: Review configurations of lockdown browsers and digital proctoring software." },
-          { id: "c3.1.6", text: "Assess AI & Smart Education governance: Review institutional policies on student use of Generative AI and plagiarism detection software." },
-          { id: "c3.1.7", text: "Audit Academic Integrity violation logs to identify trends in AI-assisted plagiarism." }
-        ]
-      },
-      {
-        id: "a3.2",
-        title: "Audit 3.2: Clinical Simulation Center & Learning Resources",
-        target: "Head of Simulation Center, Head of Learning Resource Center",
-        risk: "Medium",
-        checklist: [
-          { id: "c3.2.1", text: "Review preventative maintenance schedules and calibration logs for high-fidelity medical simulation mannequins." },
-          { id: "c3.2.2", text: "Assess inventory management for consumable medical supplies in the simulation center to prevent stock-outs." },
-          { id: "c3.2.3", text: "Evaluate simulation debriefing protocols: Ensure faculty are conducting mandated post-simulation debriefings and securely storing videos." },
-          { id: "c3.2.4", text: "Audit the Learning Resource Center: Review digital journal subscription utilization rates versus cost." },
-          { id: "c3.2.5", text: "Assess the process for acquiring new medical textbooks and databases based on faculty requests." },
-          { id: "c3.2.6", text: "Verify copyright compliance mechanisms for materials uploaded to the university's LMS by faculty." }
-        ]
-      }
-    ]
-  },
-  {
-    id: "d4",
-    title: "Domain 4: Shared Services (Financial, HR, IT, Operations)",
-    audits: [
-      {
-        id: "a4.1",
-        title: "Audit 4.1: Financial Management, Procurement & Revenue Cycle",
-        target: "Shared Services (Finance Manager, Operations Manager)",
-        risk: "High",
-        checklist: [
-          { id: "c4.1.1", text: "Test the 'Three-Way Match': Sample 50 high-value payments to ensure POs, Receiving Reports, and Invoices align." },
-          { id: "c4.1.2", text: "Review Vendor Onboarding: Check for competitive bidding documentation and vendor conflict-of-interest screening." },
-          { id: "c4.1.3", text: "Audit Capital Expenditure (CapEx): Verify major purchases are tracked against budgets and asset-tagged." },
-          { id: "c4.1.4", text: "Analyze tuition fee collection: Review aging accounts receivable, late fees, and uncollectible debt write-off approvals." },
-          { id: "c4.1.5", text: "Audit Petty Cash handling: Conduct surprise cash counts and review replenishment vouchers." },
-          { id: "c4.1.6", text: "Review employee travel and expense reimbursement claims for adherence to policy." },
-          { id: "c4.1.7", text: "Audit monthly/quarterly Budget vs. Actual reporting submitted to the University Council." }
-        ]
-      },
-      {
-        id: "a4.2",
-        title: "Audit 4.2: Information Technology Security & Data Privacy",
-        target: "Shared Services (IT Department)",
-        risk: "Critical",
-        checklist: [
-          { id: "c4.2.1", text: "Review results and remediation plans of the latest internal/external network penetration tests." },
-          { id: "c4.2.2", text: "Audit IT user lifecycle management: Sample terminated employees to verify immediate access revocation." },
-          { id: "c4.2.3", text: "Review Data Backup and Disaster Recovery (DR): Require documented evidence of successful full-system restoration tests." },
-          { id: "c4.2.4", text: "Assess compliance with UAE PDPL and healthcare data laws regarding the storage, encryption, and transmission of student/clinical data." },
-          { id: "c4.2.5", text: "Audit Third-Party Vendor Risk: Review SOC 2 reports for critical cloud service providers." },
-          { id: "c4.2.6", text: "Evaluate physical security controls of the primary server room." },
-          { id: "c4.2.7", text: "Review the results of employee phishing simulation campaigns and mandatory training completion." }
-        ]
-      },
-      {
-        id: "a4.3",
-        title: "Audit 4.3: Human Resources & Faculty Credentialing",
-        target: "Shared Services (Senior HR Executive)",
-        risk: "High",
-        checklist: [
-          { id: "c4.3.1", text: "Primary Source Verification (PSV): Sample medical faculty files to ensure degrees and DHA/MOHAP licenses are validated via primary sources." },
-          { id: "c4.3.2", text: "Review onboarding checklists: Ensure background checks and safeguarding training are completed before the start date." },
-          { id: "c4.3.3", text: "Audit payroll processing: Reconcile payroll records against the master employee list to check for ghost employees or unauthorized allowances." },
-          { id: "c4.3.4", text: "Evaluate the administration and completion rates of the annual performance appraisal process." },
-          { id: "c4.3.5", text: "Audit the Faculty Promotion Committee process: Verify promotions follow documented criteria." },
-          { id: "c4.3.6", text: "Review exit interview data to identify systemic trends regarding staff turnover." },
-          { id: "c4.3.7", text: "Verify the tracking and enforcement of mandatory Continuing Medical Education (CME) credits for clinical faculty." }
-        ]
-      },
-      {
-        id: "a4.4",
-        title: "Audit 4.4: Facilities Management, HSE & PR",
-        target: "Shared Services (Operations Manager, Marketing & PR, HSE Officer)",
-        risk: "Medium",
-        checklist: [
-          { id: "c4.4.1", text: "Check biohazard and sharps disposal protocols: Ensure contracts with certified vendors are active and logs are maintained." },
-          { id: "c4.4.2", text: "Verify the completion of mandatory emergency response, chemical spill, and fire safety drills." },
-          { id: "c4.4.3", text: "Audit preventative maintenance schedules for critical campus infrastructure (HVAC, labs)." },
-          { id: "c4.4.4", text: "Review Security Guard contract SLAs and audit physical access logs/CCTV coverage for sensitive areas." },
-          { id: "c4.4.5", text: "Audit Marketing & PR: Review public-facing materials to ensure claims regarding university rankings are factually accurate." },
-          { id: "c4.4.6", text: "Evaluate the university's environmental sustainability initiatives against stated institutional goals." }
-        ]
-      }
-    ]
-  },
-  {
-    id: "d5",
-    title: "Domain 5: Research & Post-Graduate Education",
-    audits: [
-      {
-        id: "a5.1",
-        title: "Audit 5.1: Research Ethics, Grant Management & IP",
-        target: "Vice Chancellor – Research & Post Graduate Education, IRB, IP Specialist",
-        risk: "High",
-        checklist: [
-          { id: "c5.1.1", text: "Audit the IRB Process: Sample active clinical research projects to ensure formal IRB approval was granted prior to patient/data collection." },
-          { id: "c5.1.2", text: "Review Conflict of Interest (COI) declarations specific to researchers." },
-          { id: "c5.1.3", text: "Review Grant Financial Management: Trace expenditures to ensure funds are used strictly for intended research purposes." },
-          { id: "c5.1.4", text: "Audit grant milestone reporting to ensure researchers are meeting deliverables required by external funding agencies." },
-          { id: "c5.1.5", text: "Assess Intellectual Property controls: Review the workflow for declaring new inventions and filing patents." },
-          { id: "c5.1.6", text: "Evaluate Graduate Education: Verify that post-graduate admissions criteria are strictly followed." },
-          { id: "c5.1.7", text: "Review the composition of graduate thesis defense committees to ensure neutrality and required expertise." },
-          { id: "c5.1.8", text: "Verify the mandatory use of advanced plagiarism detection tools on all final graduate theses prior to defense." }
-        ]
-      }
-    ]
-  }
+...
 ];
 
 // Enrich data with advanced fields
@@ -265,13 +48,25 @@ const initializeData = (data) => {
 const STATUS_OPTIONS = ['Not Started', 'In Progress', 'Compliant', 'Partially Compliant', 'Non-Compliant', 'N/A'];
 const ACADEMIC_YEARS = ['2024-2025', '2025-2026', '2026-2027', '2027-2028', '2028-2029'];
 
+const PROJECT_ID = 'main_audit'; 
+
 export default function App() {
-  const [data, setData] = useState(() => initializeData(rawInitialData));
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [expandedAudits, setExpandedAudits] = useState({});
   const [academicYear, setAcademicYear] = useState('2026-2027');
-  const [isAdmin, setIsAdmin] = useState(false);
+  
+  // Auth State
+  const [isAuthenticated, setIsAuthenticated] = useState(() => localStorage.getItem('audit_auth') === 'true');
+  const [userRole, setUserRole] = useState(() => localStorage.getItem('audit_role') || 'viewer');
+  const [loginPass, setLoginPass] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  const isAdmin = userRole === 'admin';
+
   const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
   
   // Report Filters
   const [reportFilters, setReportFilters] = useState({
@@ -279,9 +74,94 @@ export default function App() {
     status: 'All'
   });
 
+  // 1. Initial Load from Supabase
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const fetchData = async () => {
+      try {
+        const { data: records, error } = await supabase
+          .from('audit_projects')
+          .select('state')
+          .eq('id', PROJECT_ID)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching data:', error);
+        }
+
+        if (records?.state) {
+          setData(records.state);
+        } else {
+          const enriched = initializeData(rawInitialData);
+          setData(enriched);
+          if (isAdmin) await saveToSupabase(enriched);
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [isAuthenticated]);
+
+  // 2. Save function
+  const saveToSupabase = async (currentData) => {
+    if (!isAdmin) return; // Viewers cannot save
+
+    try {
+      const { error } = await supabase
+        .from('audit_projects')
+        .upsert({ id: PROJECT_ID, state: currentData, updated_at: new Date() });
+      
+      if (error) throw error;
+    } catch (err) {
+      console.error('Save error:', err);
+      triggerToast("Error saving to database!");
+    }
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (loginPass === 'admin123') {
+      setIsAuthenticated(true);
+      setUserRole('admin');
+      localStorage.setItem('audit_auth', 'true');
+      localStorage.setItem('audit_role', 'admin');
+    } else if (loginPass === 'guest123') {
+      setIsAuthenticated(true);
+      setUserRole('viewer');
+      localStorage.setItem('audit_auth', 'true');
+      localStorage.setItem('audit_role', 'viewer');
+    } else {
+      setLoginError('Invalid passcode. Try admin123 or guest123');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserRole('viewer');
+    localStorage.removeItem('audit_auth');
+    localStorage.removeItem('audit_role');
+  };
+
+  const triggerToast = (msg) => {
+    setToastMsg(msg);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
+  // Helper to update state and sync with Supabase
+  const updateAndSync = (newData) => {
+    setData(newData);
+    saveToSupabase(newData);
+  };
+
   // Helper to update a specific item's field (status, text, comment)
   const updateItem = (domainId, auditId, itemId, field, value) => {
-    setData(prev => prev.map(domain => {
+    const newData = data.map(domain => {
       if (domain.id !== domainId) return domain;
       return {
         ...domain,
@@ -296,27 +176,32 @@ export default function App() {
           };
         })
       };
-    }));
+    });
+    updateAndSync(newData);
   };
 
   // --- Admin Structural Handlers ---
   const updateDomain = (domainId, field, value) => {
-    setData(prev => prev.map(d => d.id === domainId ? { ...d, [field]: value } : d));
+    const newData = data.map(d => d.id === domainId ? { ...d, [field]: value } : d);
+    updateAndSync(newData);
   };
   
   const addDomain = () => {
     const newDomain = { id: `d${Date.now()}`, title: "New Domain", audits: [] };
-    setData(prev => [...prev, newDomain]);
+    const newData = [...data, newDomain];
+    updateAndSync(newData);
   };
   
   const deleteDomain = (domainId) => {
-    setData(prev => prev.filter(d => d.id !== domainId));
+    const newData = data.filter(d => d.id !== domainId);
+    updateAndSync(newData);
   };
 
   const updateAudit = (domainId, auditId, field, value) => {
-    setData(prev => prev.map(d => d.id === domainId ? {
+    const newData = data.map(d => d.id === domainId ? {
       ...d, audits: d.audits.map(a => a.id === auditId ? { ...a, [field]: value } : a)
-    } : d));
+    } : d);
+    updateAndSync(newData);
   };
 
   const addAudit = (domainId) => {
@@ -327,24 +212,28 @@ export default function App() {
       risk: "Medium",
       checklist: []
     };
-    setData(prev => prev.map(d => d.id === domainId ? { ...d, audits: [...d.audits, newAudit] } : d));
+    const newData = data.map(d => d.id === domainId ? { ...d, audits: [...d.audits, newAudit] } : d);
+    updateAndSync(newData);
   };
 
   const deleteAudit = (domainId, auditId) => {
-    setData(prev => prev.map(d => d.id === domainId ? { ...d, audits: d.audits.filter(a => a.id !== auditId) } : d));
+    const newData = data.map(d => d.id === domainId ? { ...d, audits: d.audits.filter(a => a.id !== auditId) } : d);
+    updateAndSync(newData);
   };
 
   const addItem = (domainId, auditId) => {
     const newItem = { id: `c${Date.now()}`, text: "New checklist requirement...", status: 'Not Started', comment: '' };
-    setData(prev => prev.map(d => d.id === domainId ? {
+    const newData = data.map(d => d.id === domainId ? {
       ...d, audits: d.audits.map(a => a.id === auditId ? { ...a, checklist: [...a.checklist, newItem] } : a)
-    } : d));
+    } : d);
+    updateAndSync(newData);
   };
 
   const deleteItem = (domainId, auditId, itemId) => {
-    setData(prev => prev.map(d => d.id === domainId ? {
+    const newData = data.map(d => d.id === domainId ? {
       ...d, audits: d.audits.map(a => a.id === auditId ? { ...a, checklist: a.checklist.filter(c => c.id !== itemId) } : a)
-    } : d));
+    } : d);
+    updateAndSync(newData);
   };
 
   const toggleAuditAccordion = (auditId) => {
@@ -354,12 +243,13 @@ export default function App() {
   const handleShareLink = () => {
     const fakeUrl = `https://dmu-audit.app/report?year=${academicYear}&view=live&auth=secure_token`;
     navigator.clipboard.writeText(fakeUrl);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+    triggerToast("Secure live report link copied to clipboard!");
   };
 
   // Calculate Progress Stats
   const stats = useMemo(() => {
+    if (!data || data.length === 0) return { overallProgress: 0, completedItems: 0, totalItems: 0, domainProgress: [] };
+    
     let totalItems = 0;
     let completedItems = 0;
     
@@ -395,6 +285,71 @@ export default function App() {
     };
   }, [data]);
 
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="bg-blue-600 p-8 text-center">
+            <Building className="w-12 h-12 text-white mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white">DMU Audit Portal</h2>
+            <p className="text-blue-100 text-sm mt-2">Internal Audit Management System</p>
+          </div>
+          <div className="p-8">
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Access Passcode</label>
+                <div className="relative">
+                  <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="password"
+                    value={loginPass}
+                    onChange={(e) => { setLoginPass(e.target.value); setLoginError(''); }}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+                {loginError && <p className="text-red-500 text-xs mt-2 font-medium">{loginError}</p>}
+              </div>
+              <button 
+                type="submit"
+                className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition shadow-lg shadow-blue-200"
+              >
+                Sign In
+              </button>
+            </form>
+            <div className="mt-8 pt-6 border-t border-gray-100">
+              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Quick Access Guide</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase">Admin</span>
+                  <code className="text-xs text-blue-600 font-bold">admin123</code>
+                </div>
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase">Viewer</span>
+                  <code className="text-xs text-blue-600 font-bold">guest123</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-900 text-white">
+        <div className="text-center">
+          <Building className="w-12 h-12 text-blue-400 mx-auto animate-pulse mb-4" />
+          <h2 className="text-xl font-bold">Loading Audit Dashboard...</h2>
+          <p className="text-slate-400 mt-2">Connecting to Supabase Database</p>
+        </div>
+      </div>
+    );
+  }
+
   // Color Helpers
   const getRiskColor = (risk) => {
     switch(risk) {
@@ -420,10 +375,8 @@ export default function App() {
   const filteredReportData = useMemo(() => {
     return data.map(domain => {
       const filteredAudits = domain.audits.map(audit => {
-        // Filter by Risk
         if (reportFilters.risk !== 'All' && audit.risk !== reportFilters.risk) return null;
         
-        // Filter checklist by status
         const filteredChecklist = audit.checklist.filter(item => {
           if (reportFilters.status === 'All') return true;
           return item.status === reportFilters.status;
@@ -432,7 +385,7 @@ export default function App() {
         if (filteredChecklist.length === 0 && reportFilters.status !== 'All') return null;
 
         return { ...audit, checklist: filteredChecklist };
-      }).filter(Boolean); // Remove null audits
+      }).filter(Boolean);
 
       return { ...domain, audits: filteredAudits };
     }).filter(domain => domain.audits.length > 0);
@@ -445,7 +398,7 @@ export default function App() {
       {showToast && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 bg-slate-900 text-white px-6 py-3 rounded-full shadow-lg flex items-center space-x-2 animate-bounce print:hidden">
           <LinkIcon className="w-4 h-4" />
-          <span className="font-medium text-sm">Secure live report link copied to clipboard!</span>
+          <span className="font-medium text-sm">{toastMsg}</span>
         </div>
       )}
 
@@ -482,33 +435,37 @@ export default function App() {
           </button>
         </nav>
         
-        {/* Admin & Year Controls in Sidebar */}
+        {/* User Info & Logout */}
         <div className="p-4 border-t border-slate-800 space-y-4">
+          <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className={`p-2 rounded-lg ${isAdmin ? 'bg-amber-500/20 text-amber-500' : 'bg-blue-500/20 text-blue-500'}`}>
+                <User className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-300 uppercase tracking-tighter">{userRole}</p>
+                <p className="text-[10px] text-slate-500">Access Granted</p>
+              </div>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center space-x-2 text-xs font-bold text-slate-400 hover:text-red-400 hover:bg-red-400/10 py-2 rounded-lg transition-all"
+            >
+              <LogOut className="w-3 h-3" />
+              <span>Log Out</span>
+            </button>
+          </div>
+
           <div>
             <label className="text-xs text-slate-400 mb-1 block">Academic Year</label>
             <select 
               value={academicYear}
+              disabled={!isAdmin}
               onChange={(e) => setAcademicYear(e.target.value)}
-              className="w-full bg-slate-800 text-white text-sm rounded border border-slate-700 p-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full bg-slate-800 text-white text-sm rounded border border-slate-700 p-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:opacity-50"
             >
               {ACADEMIC_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
-          </div>
-          
-          <div className="flex items-center justify-between bg-slate-800 p-3 rounded-lg">
-            <div className="flex items-center space-x-2">
-              <Settings className="w-4 h-4 text-slate-400" />
-              <span className="text-sm font-medium">Admin Mode</span>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input 
-                type="checkbox" 
-                className="sr-only peer" 
-                checked={isAdmin}
-                onChange={() => setIsAdmin(!isAdmin)}
-              />
-              <div className="w-9 h-5 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
-            </label>
           </div>
         </div>
       </aside>
@@ -576,11 +533,17 @@ export default function App() {
                 <h1 className="text-3xl font-bold text-gray-900">Fieldwork Checklists</h1>
                 <p className="text-gray-500 mt-2">Evaluate controls, set status rubrics, and record findings.</p>
               </div>
-              {isAdmin && (
-                <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-widest rounded flex items-center">
-                  <Edit3 className="w-3 h-3 mr-1" /> Admin Edit Mode
-                </span>
-              )}
+              <div className="flex flex-col items-end">
+                {isAdmin ? (
+                  <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-widest rounded flex items-center mb-2">
+                    <Edit3 className="w-3 h-3 mr-1" /> Admin Edit Mode
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-widest rounded flex items-center mb-2">
+                    <ShieldAlert className="w-3 h-3 mr-1" /> View Only Mode
+                  </span>
+                )}
+              </div>
             </header>
 
             <div className="space-y-8">
@@ -617,7 +580,7 @@ export default function App() {
                           <div 
                             className={`p-5 flex justify-between items-start ${isFullyComplete && !isAdmin ? 'bg-emerald-50/30' : ''}`}
                           >
-                            <div className="flex-1 pr-4 cursor-pointer" onClick={() => !isAdmin && toggleAuditAccordion(audit.id)}>
+                            <div className="flex-1 pr-4 cursor-pointer" onClick={() => toggleAuditAccordion(audit.id)}>
                               <div className="flex items-start space-x-3 mb-1 flex-col md:flex-row md:items-center">
                                 {isAdmin ? (
                                   <input 
@@ -684,14 +647,13 @@ export default function App() {
                                     key={item.id}
                                     className={`p-4 rounded-lg border transition-all ${item.status === 'Compliant' ? 'bg-emerald-50/30 border-emerald-200' : item.status === 'Partially Compliant' ? 'bg-yellow-50/30 border-yellow-200' : item.status === 'Non-Compliant' ? 'bg-red-50/30 border-red-200' : 'bg-white border-gray-200 shadow-sm'}`}
                                   >
-                                    {/* Top Row: Rubric & Text */}
                                     <div className="flex flex-col md:flex-row md:items-start space-y-3 md:space-y-0 md:space-x-4">
-                                      {/* Status Selector Rubric */}
                                       <div className="flex-shrink-0 w-full md:w-44">
                                         <select
                                           value={item.status}
+                                          disabled={!isAdmin}
                                           onChange={(e) => updateItem(domain.id, audit.id, item.id, 'status', e.target.value)}
-                                          className={`w-full text-sm font-semibold rounded p-2 border outline-none cursor-pointer appearance-none ${getStatusColor(item.status)}`}
+                                          className={`w-full text-sm font-semibold rounded p-2 border outline-none cursor-pointer appearance-none ${getStatusColor(item.status)} disabled:opacity-80`}
                                         >
                                           {STATUS_OPTIONS.map(opt => (
                                             <option key={opt} value={opt} className="bg-white text-gray-900">{opt}</option>
@@ -699,7 +661,6 @@ export default function App() {
                                         </select>
                                       </div>
 
-                                      {/* Item Text / Edit Area */}
                                       <div className="flex-1 flex items-start space-x-2">
                                         {isAdmin ? (
                                           <textarea 
@@ -721,14 +682,14 @@ export default function App() {
                                       </div>
                                     </div>
 
-                                    {/* Bottom Row: Comments / Findings Area */}
                                     <div className="mt-3 pt-3 border-t border-gray-100 flex items-start space-x-2">
                                       <MessageSquare className="w-4 h-4 text-slate-400 mt-2 flex-shrink-0" />
                                       <textarea
                                         value={item.comment}
+                                        readOnly={!isAdmin}
                                         onChange={(e) => updateItem(domain.id, audit.id, item.id, 'comment', e.target.value)}
-                                        placeholder="Add audit findings, evidence references, or management comments here..."
-                                        className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded p-2 focus:ring-1 focus:ring-blue-400 outline-none resize-y min-h-[60px]"
+                                        placeholder={isAdmin ? "Add findings/evidence..." : "No findings recorded."}
+                                        className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded p-2 focus:ring-1 focus:ring-blue-400 outline-none resize-y min-h-[60px] read-only:bg-transparent read-only:border-transparent"
                                       />
                                     </div>
                                   </li>
@@ -773,7 +734,6 @@ export default function App() {
         {activeTab === 'report' && (
           <div className="p-8 max-w-5xl mx-auto print:p-0 print:max-w-none">
             
-            {/* Header & Controls (Hidden on print) */}
             <div className="mb-8 print:hidden">
               <div className="flex justify-between items-center mb-6">
                 <div>
@@ -792,7 +752,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Filters Area */}
               <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-6">
                 <div className="flex items-center space-x-2 text-gray-500 font-medium">
                   <Filter className="w-5 h-5" />
@@ -827,7 +786,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Printable Document Area */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-10 print:border-none print:shadow-none print:p-4">
               
               <div className="text-center mb-10 border-b-2 border-slate-800 pb-8">
@@ -849,7 +807,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Dynamic Domains & Audits */}
               {filteredReportData.length === 0 ? (
                 <div className="text-center py-20 text-gray-500">
                   <Filter className="w-12 h-12 mx-auto mb-3 text-gray-300" />
@@ -891,7 +848,6 @@ export default function App() {
                                     </p>
                                   </div>
                                   
-                                  {/* Render Comment if it exists */}
                                   {item.comment && (
                                     <div className="ml-16 mt-2 pt-2 border-t border-gray-200 flex items-start space-x-2">
                                       <MessageSquare className="w-3 h-3 text-slate-400 mt-0.5 flex-shrink-0" />
