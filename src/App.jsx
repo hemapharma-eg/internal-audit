@@ -297,8 +297,12 @@ export default function App() {
 
   // 1. Initial Load from Supabase
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      setLoading(false); // Stop loading if we need to show login
+      return;
+    }
 
+    setLoading(true); // Start loading when auth changes to true
     const fetchData = async () => {
       try {
         const { data: records, error } = await supabase
@@ -326,7 +330,7 @@ export default function App() {
     };
 
     fetchData();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, userRole]); // Re-run when auth or role changes
 
   // 2. Save function
   const saveToSupabase = async (currentData) => {
@@ -508,8 +512,8 @@ export default function App() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+      <div className="fixed inset-0 w-full h-full bg-slate-900 flex items-center justify-center p-4 z-[9999]">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
           <div className="bg-blue-600 p-8 text-center">
             <Building className="w-12 h-12 text-white mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white">DMU Audit Portal</h2>
@@ -534,7 +538,7 @@ export default function App() {
               </div>
               <button 
                 type="submit"
-                className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition shadow-lg shadow-blue-200"
+                className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition shadow-lg"
               >
                 Sign In
               </button>
