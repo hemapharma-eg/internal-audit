@@ -22,7 +22,8 @@ import {
   Plus,
   Lock,
   User,
-  LogOut
+  LogOut,
+  Mail
 } from 'lucide-react';
 
 // --- Base Data Extraction ---
@@ -279,11 +280,16 @@ export default function App() {
   const [academicYear, setAcademicYear] = useState('2026-2027');
   
   // Auth State
-  const [isAuthenticated, setIsAuthenticated] = useState(() => localStorage.getItem('audit_auth') === 'true');
-  const [userRole, setUserRole] = useState(() => localStorage.getItem('audit_role') || 'viewer');
+  const [session, setSession] = useState(null);
+  const [userRole, setUserRole] = useState('viewer');
+  const [userEmail, setUserEmail] = useState('');
+  const [loginEmail, setLoginEmail] = useState('');
   const [loginPass, setLoginPass] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
 
+  const isAuthenticated = !!session;
   const isAdmin = userRole === 'admin';
 
   const [showToast, setShowToast] = useState(false);
@@ -294,6 +300,53 @@ export default function App() {
     risk: 'All',
     status: 'All'
   });
+
+  // 0. Auth Session Listener
+  useEffect(() => {
+    // Check existing session
+    supabase.auth.getSession().then(({ data: { session: s } }) => {
+      setSession(s);
+      if (s?.user) {
+        setUserEmail(s.user.email);
+        fetchUserRole(s.user.id);
+      }
+      setAuthReady(true);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+      setSession(s);
+      if (s?.user) {
+        setUserEmail(s.user.email);
+        fetchUserRole(s.user.id);
+      } else {
+        setUserRole('viewer');
+        setUserEmail('');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Fetch user role from user_roles table
+  const fetchUserRole = async (userId) => {
+    try {
+      const { data: roleData, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      if (roleData?.role) {
+        setUserRole(roleData.role);
+      } else {
+        setUserRole('viewer'); // Default to viewer
+      }
+    } catch (err) {
+      console.warn('Could not fetch role, defaulting to viewer:', err);
+      setUserRole('viewer');
+    }
+  };
 
   // 1. Initial Load from Supabase (with fallback to local data)
   useEffect(() => {
@@ -314,16 +367,14 @@ export default function App() {
         if (records?.state && Array.isArray(records.state) && records.state.length > 0) {
           setData(records.state);
         } else {
-          // No data in DB or error — use local initial data
           console.warn('No data from Supabase, using local initial data.');
           const enriched = initializeData(rawInitialData);
           setData(enriched);
           if (isAdmin) {
-            try { await saveToSupabase(enriched); } catch(e) { /* ignore save errors */ }
+            try { await saveToSupabase(enriched); } catch(e) { /* ignore */ }
           }
         }
       } catch (err) {
-        // Supabase completely failed — ALWAYS fall back to local data
         console.error('Supabase fetch failed, using local data:', err);
         const enriched = initializeData(rawInitialData);
         setData(enriched);
@@ -337,7 +388,7 @@ export default function App() {
 
   // 2. Save function
   const saveToSupabase = async (currentData) => {
-    if (!isAdmin) return; // Viewers cannot save
+    if (!isAdmin) return;
 
     try {
       const { error } = await supabase
@@ -351,28 +402,31 @@ export default function App() {
     }
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (loginPass === 'admin123') {
-      setIsAuthenticated(true);
-      setUserRole('admin');
-      localStorage.setItem('audit_auth', 'true');
-      localStorage.setItem('audit_role', 'admin');
-    } else if (loginPass === 'guest123') {
-      setIsAuthenticated(true);
-      setUserRole('viewer');
-      localStorage.setItem('audit_auth', 'true');
-      localStorage.setItem('audit_role', 'viewer');
-    } else {
-      setLoginError('Invalid passcode. Try admin123 or guest123');
+    setLoginLoading(true);
+    setLoginError('');
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPass,
+      });
+      if (error) {
+        setLoginError(error.message);
+      }
+    } catch (err) {
+      setLoginError('An unexpected error occurred.');
+    } finally {
+      setLoginLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setSession(null);
     setUserRole('viewer');
-    localStorage.removeItem('audit_auth');
-    localStorage.removeItem('audit_role');
+    setUserEmail('');
+    setData([]);
   };
 
   const triggerToast = (msg) => {
@@ -469,9 +523,9 @@ export default function App() {
   };
 
   const handleShareLink = () => {
-    const fakeUrl = `https://dmu-audit.app/report?year=${academicYear}&view=live&auth=secure_token`;
-    navigator.clipboard.writeText(fakeUrl);
-    triggerToast("Secure live report link copied to clipboard!");
+    const liveUrl = `${window.location.origin}${window.location.pathname}`;
+    navigator.clipboard.writeText(liveUrl);
+    triggerToast("Live report link copied to clipboard!");
   };
 
   // Color Helpers (must be before any early returns)
@@ -576,19 +630,44 @@ export default function App() {
 
   // --- EARLY RETURNS (all hooks must be above this line) ---
 
+  if (!authReady) {
+    return (
+      <div className="fixed inset-0 w-full h-full bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <Building className="w-12 h-12 text-blue-400 mx-auto animate-pulse mb-4" />
+          <p className="text-slate-400">Initializing...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 w-full h-full bg-slate-900 flex items-center justify-center p-4 z-[9999]">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
           <div className="bg-blue-600 p-8 text-center">
             <Building className="w-12 h-12 text-white mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white">DMU Audit Portal</h2>
             <p className="text-blue-100 text-sm mt-2">Internal Audit Management System</p>
           </div>
           <div className="p-8">
-            <form onSubmit={handleLogin} className="space-y-6">
+            <form onSubmit={handleLogin} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Access Passcode</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                <div className="relative">
+                  <Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    value={loginEmail}
+                    onChange={(e) => { setLoginEmail(e.target.value); setLoginError(''); }}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                 <div className="relative">
                   <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
@@ -600,28 +679,17 @@ export default function App() {
                     required
                   />
                 </div>
-                {loginError && <p className="text-red-500 text-xs mt-2 font-medium">{loginError}</p>}
               </div>
+              {loginError && <p className="text-red-500 text-xs font-medium bg-red-50 p-3 rounded-lg border border-red-200">{loginError}</p>}
               <button 
                 type="submit"
-                className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition shadow-lg"
+                disabled={loginLoading}
+                className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign In
+                {loginLoading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>
-            <div className="mt-8 pt-6 border-t border-gray-100">
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Quick Access Guide</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase">Admin</span>
-                  <code className="text-xs text-blue-600 font-bold">admin123</code>
-                </div>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase">Viewer</span>
-                  <code className="text-xs text-blue-600 font-bold">guest123</code>
-                </div>
-              </div>
-            </div>
+            <p className="text-xs text-center text-gray-400 mt-6">Contact your administrator for login credentials.</p>
           </div>
         </div>
       </div>
@@ -695,7 +763,7 @@ export default function App() {
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-300 uppercase tracking-tighter">{userRole}</p>
-                <p className="text-[10px] text-slate-500">Access Granted</p>
+                <p className="text-[10px] text-slate-500 truncate max-w-[140px]">{userEmail}</p>
               </div>
             </div>
             <button 
