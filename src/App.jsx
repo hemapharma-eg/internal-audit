@@ -258,9 +258,9 @@ const initializeData = (data) => {
   return data.map(domain => ({
     ...domain,
     subdomains: domain.subdomains.map(subdomain => ({
-      ...audit,
+      ...subdomain,
       criteria: subdomain.criteria.map(criterion => ({
-        ...item,
+        ...criterion,
         status: 'Not Started', // Not Started, In Progress, Compliant, Partially Compliant, Non-Compliant, N/A
         comment: ''
       }))
@@ -602,12 +602,12 @@ export default function App() {
       return {
         ...domain,
         subdomains: domain.subdomains.map(subdomain => {
-          if (subdomain.id !== subdomainId) return audit;
+          if (subdomain.id !== subdomainId) return subdomain;
           return {
-            ...audit,
+            ...subdomain,
             criteria: subdomain.criteria.map(criterion => {
-              if (criterion.id !== criterionId) return item;
-              return { ...item, [field]: value };
+              if (criterion.id !== criterionId) return criterion;
+              return { ...criterion, [field]: value };
             })
           };
         })
@@ -775,7 +775,7 @@ export default function App() {
 
         if (filteredCriteria.length === 0 && reportFilters.status !== 'All') return null;
 
-        return { ...audit, criteria: filteredCriteria };
+        return { ...subdomain, criteria: filteredCriteria };
       }).filter(Boolean);
 
       return { ...domain, subdomains: filteredSubdomains };
