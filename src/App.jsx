@@ -303,26 +303,28 @@ export default function App() {
 
   // 0. Auth Session Listener
   useEffect(() => {
-    // Check existing session
+    // Check for existing session on page load
     supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      if (s?.user) {
+      if (s) {
+        setSession(s);
         setUserEmail(s.user.email);
         fetchUserRole(s.user.id);
       }
       setAuthReady(true);
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
-      setSession(s);
-      if (s?.user) {
-        setUserEmail(s.user.email);
-        fetchUserRole(s.user.id);
-      } else {
+    // Listen ONLY for sign-out and token refresh events
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+      if (event === 'SIGNED_OUT') {
+        setSession(null);
         setUserRole('viewer');
         setUserEmail('');
+        setData([]);
+      } else if (event === 'TOKEN_REFRESHED' && s) {
+        setSession(s);
       }
+      // We do NOT handle SIGNED_IN or INITIAL_SESSION here 
+      // because handleLogin sets the session explicitly.
     });
 
     return () => subscription.unsubscribe();
@@ -340,7 +342,7 @@ export default function App() {
       if (roleData?.role) {
         setUserRole(roleData.role);
       } else {
-        setUserRole('viewer'); // Default to viewer
+        setUserRole('viewer');
       }
     } catch (err) {
       console.warn('Could not fetch role, defaulting to viewer:', err);
@@ -407,12 +409,17 @@ export default function App() {
     setLoginLoading(true);
     setLoginError('');
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: loginData, error } = await supabase.auth.signInWithPassword({
         email: loginEmail,
         password: loginPass,
       });
       if (error) {
         setLoginError(error.message);
+      } else if (loginData?.session) {
+        // Explicitly set session from the login response
+        setSession(loginData.session);
+        setUserEmail(loginData.session.user.email);
+        await fetchUserRole(loginData.session.user.id);
       }
     } catch (err) {
       setLoginError('An unexpected error occurred.');
@@ -428,6 +435,7 @@ export default function App() {
     setUserEmail('');
     setData([]);
   };
+
 
   const triggerToast = (msg) => {
     setToastMsg(msg);
