@@ -476,7 +476,7 @@ export default function App() {
       if (audits.length === 0) {
         flatData.push({
           'Domain ID': domain.id,
-          'Domain Title': domain.title,
+          'Domain': domain.title,
           'Sub-domain ID': '', 'Sub-Domain': '', 'Target': '', 'Risk': '',
           'Criteria ID': '', 'Criteria': '', 'Status': '', 'Comment': ''
         });
@@ -486,7 +486,7 @@ export default function App() {
           if (checklist.length === 0) {
             flatData.push({
               'Domain ID': domain.id,
-              'Domain Title': domain.title,
+              'Domain': domain.title,
               'Sub-domain ID': subdomain.id,
               'Sub-Domain': subdomain.title,
               'Target': subdomain.target,
@@ -497,7 +497,7 @@ export default function App() {
             checklist.forEach(criterion => {
               flatData.push({
                 'Domain ID': domain.id,
-                'Domain Title': domain.title,
+                'Domain': domain.title,
                 'Sub-domain ID': subdomain.id,
                 'Sub-Domain': subdomain.title,
                 'Target': subdomain.target,
@@ -513,7 +513,11 @@ export default function App() {
       }
     });
     
-    const ws = XLSX.utils.json_to_sheet(flatData);
+    const headers = [
+      'Domain ID', 'Domain', 'Sub-domain ID', 'Sub-Domain', 
+      'Target', 'Risk', 'Criteria ID', 'Criteria', 'Status', 'Comment'
+    ];
+    const ws = XLSX.utils.json_to_sheet(flatData, { header: headers });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Audit Plan");
     XLSX.writeFile(wb, `Audit_Plan_${academicYear}.xlsx`);
@@ -538,7 +542,7 @@ export default function App() {
           if (!domainMap[dId]) {
             domainMap[dId] = {
               id: dId,
-              title: row['Domain Title'] || 'New Domain',
+              title: row['Domain'] || 'New Domain',
               subdomains: []
             };
           }
