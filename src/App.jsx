@@ -614,11 +614,15 @@ export default function App() {
 
   // Filter Data for Report
   const filteredReportData = useMemo(() => {
+    if (!data || !Array.isArray(data)) return [];
+
     return data.map(domain => {
-      const filteredAudits = domain.audits.map(audit => {
+      const audits = domain.audits || [];
+      const filteredAudits = audits.map(audit => {
         if (reportFilters.risk !== 'All' && audit.risk !== reportFilters.risk) return null;
         
-        const filteredChecklist = audit.checklist.filter(item => {
+        const checklist = audit.checklist || [];
+        const filteredChecklist = checklist.filter(item => {
           if (reportFilters.status === 'All') return true;
           return item.status === reportFilters.status;
         });
@@ -629,7 +633,7 @@ export default function App() {
       }).filter(Boolean);
 
       return { ...domain, audits: filteredAudits };
-    }).filter(domain => domain.audits.length > 0);
+    }).filter(domain => (domain.audits || []).length > 0);
   }, [data, reportFilters]);
 
   return (

@@ -6,12 +6,15 @@
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-body {
+html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  width: 100%;
   min-height: 100vh;
-  background-color: #f8fafc; /* light gray background */
+  background-color: #f8fafc;
   color: #1e293b;
+  overflow: hidden; /* Prevent double scrollbars */
 }
 
 #root {
