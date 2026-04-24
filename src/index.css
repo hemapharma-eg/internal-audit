@@ -14,7 +14,6 @@ html, body {
   min-height: 100vh;
   background-color: #f8fafc;
   color: #1e293b;
-  overflow: hidden; /* Prevent double scrollbars */
 }
 
 #root {
@@ -22,7 +21,6 @@ html, body {
   height: 100%;
 }
 
-/* Ensure print styles are respected */
 @media print {
   body {
     background-color: white !important;

@@ -474,6 +474,27 @@ export default function App() {
     triggerToast("Secure live report link copied to clipboard!");
   };
 
+  // Color Helpers (must be before any early returns)
+  const getRiskColor = (risk) => {
+    switch(risk) {
+      case 'Critical': return 'text-red-700 bg-red-100 border-red-200';
+      case 'High': return 'text-orange-700 bg-orange-100 border-orange-200';
+      case 'Medium': return 'text-blue-700 bg-blue-100 border-blue-200';
+      default: return 'text-gray-700 bg-gray-100 border-gray-200';
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'Compliant': return 'bg-emerald-100 text-emerald-800 border-emerald-300';
+      case 'Partially Compliant': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'Non-Compliant': return 'bg-red-100 text-red-800 border-red-300';
+      case 'In Progress': return 'bg-blue-100 text-blue-800 border-blue-300';
+      case 'N/A': return 'bg-slate-200 text-slate-800 border-slate-300';
+      default: return 'bg-gray-100 text-gray-600 border-gray-300';
+    }
+  };
+
   // Calculate Progress Stats
   const stats = useMemo(() => {
     // Return early if data is missing
@@ -528,6 +549,32 @@ export default function App() {
       return { overallProgress: 0, completedItems: 0, totalItems: 0, domainProgress: [] };
     }
   }, [data]);
+
+  // Filter Data for Report (must be before early returns - React Rules of Hooks)
+  const filteredReportData = useMemo(() => {
+    if (!data || !Array.isArray(data)) return [];
+
+    return data.map(domain => {
+      const audits = domain.audits || [];
+      const filteredAudits = audits.map(audit => {
+        if (reportFilters.risk !== 'All' && audit.risk !== reportFilters.risk) return null;
+        
+        const checklist = audit.checklist || [];
+        const filteredChecklist = checklist.filter(item => {
+          if (reportFilters.status === 'All') return true;
+          return item.status === reportFilters.status;
+        });
+
+        if (filteredChecklist.length === 0 && reportFilters.status !== 'All') return null;
+
+        return { ...audit, checklist: filteredChecklist };
+      }).filter(Boolean);
+
+      return { ...domain, audits: filteredAudits };
+    }).filter(domain => (domain.audits || []).length > 0);
+  }, [data, reportFilters]);
+
+  // --- EARLY RETURNS (all hooks must be above this line) ---
 
   if (!isAuthenticated) {
     return (
@@ -594,50 +641,6 @@ export default function App() {
     );
   }
 
-  // Color Helpers
-  const getRiskColor = (risk) => {
-    switch(risk) {
-      case 'Critical': return 'text-red-700 bg-red-100 border-red-200';
-      case 'High': return 'text-orange-700 bg-orange-100 border-orange-200';
-      case 'Medium': return 'text-blue-700 bg-blue-100 border-blue-200';
-      default: return 'text-gray-700 bg-gray-100 border-gray-200';
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'Compliant': return 'bg-emerald-100 text-emerald-800 border-emerald-300';
-      case 'Partially Compliant': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'Non-Compliant': return 'bg-red-100 text-red-800 border-red-300';
-      case 'In Progress': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'N/A': return 'bg-slate-200 text-slate-800 border-slate-300';
-      default: return 'bg-gray-100 text-gray-600 border-gray-300'; // Not Started
-    }
-  };
-
-  // Filter Data for Report
-  const filteredReportData = useMemo(() => {
-    if (!data || !Array.isArray(data)) return [];
-
-    return data.map(domain => {
-      const audits = domain.audits || [];
-      const filteredAudits = audits.map(audit => {
-        if (reportFilters.risk !== 'All' && audit.risk !== reportFilters.risk) return null;
-        
-        const checklist = audit.checklist || [];
-        const filteredChecklist = checklist.filter(item => {
-          if (reportFilters.status === 'All') return true;
-          return item.status === reportFilters.status;
-        });
-
-        if (filteredChecklist.length === 0 && reportFilters.status !== 'All') return null;
-
-        return { ...audit, checklist: filteredChecklist };
-      }).filter(Boolean);
-
-      return { ...domain, audits: filteredAudits };
-    }).filter(domain => (domain.audits || []).length > 0);
-  }, [data, reportFilters]);
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
