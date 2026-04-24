@@ -1175,9 +1175,9 @@ export default function App() {
                                       <MessageSquare className="w-4 h-4 text-slate-400 mt-2 flex-shrink-0" />
                                       <textarea
                                         value={criterion.comment}
-                                        readOnly={!isAdmin}
+                                        readOnly={!isAuthenticated}
                                         onChange={(e) => updateCriterion(domain.id, subdomain.id, criterion.id, 'comment', e.target.value)}
-                                        placeholder={isAdmin ? "Add findings/evidence..." : "No findings recorded."}
+                                        placeholder={isAuthenticated ? "Add findings/evidence..." : "No findings recorded."}
                                         className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded p-2 focus:ring-1 focus:ring-blue-400 outline-none resize-y min-h-[60px] read-only:bg-transparent read-only:border-transparent"
                                       />
                                     </div>
