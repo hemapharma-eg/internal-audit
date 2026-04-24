@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { supabase } from './supabaseClient';
+import * as XLSX from 'xlsx';
 import { 
   LayoutDashboard, 
   ClipboardCheck, 
@@ -270,7 +271,7 @@ const initializeData = (data) => {
 const STATUS_OPTIONS = ['Not Started', 'In Progress', 'Compliant', 'Partially Compliant', 'Non-Compliant', 'N/A'];
 const ACADEMIC_YEARS = ['2024-2025', '2025-2026', '2026-2027', '2027-2028', '2028-2029'];
 
-const PROJECT_ID = 'main_audit'; 
+const getProjectId = (year) => `main_audit_${year}`;
 
 export default function App() {
   const [data, setData] = useState([]);
@@ -372,7 +373,7 @@ export default function App() {
         const { data: records, error } = await supabase
           .from('audit_projects')
           .select('state')
-          .eq('id', PROJECT_ID)
+          .eq('id', getProjectId(academicYear))
           .single();
 
         if (records?.state && Array.isArray(records.state) && records.state.length > 0) {
@@ -395,7 +396,7 @@ export default function App() {
     };
 
     fetchData();
-  }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, academicYear]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 2. Save function
   const saveToSupabase = async (currentData) => {
@@ -404,7 +405,7 @@ export default function App() {
     try {
       const { error } = await supabase
         .from('audit_projects')
-        .upsert({ id: PROJECT_ID, state: currentData, updated_at: new Date() });
+        .upsert({ id: getProjectId(academicYear), state: currentData, updated_at: new Date() });
       
       if (error) throw error;
     } catch (err) {
@@ -450,6 +451,122 @@ export default function App() {
     setToastMsg(msg);
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
+  };
+
+  const exportToExcel = () => {
+    const flatData = [];
+    data.forEach(domain => {
+      const audits = domain.audits || [];
+      if (audits.length === 0) {
+        flatData.push({
+          'Domain ID': domain.id,
+          'Domain Title': domain.title,
+          'Audit ID': '', 'Audit Title': '', 'Target': '', 'Risk': '',
+          'Item ID': '', 'Checklist Text': '', 'Status': '', 'Comment': ''
+        });
+      } else {
+        audits.forEach(audit => {
+          const checklist = audit.checklist || [];
+          if (checklist.length === 0) {
+            flatData.push({
+              'Domain ID': domain.id,
+              'Domain Title': domain.title,
+              'Audit ID': audit.id,
+              'Audit Title': audit.title,
+              'Target': audit.target,
+              'Risk': audit.risk,
+              'Item ID': '', 'Checklist Text': '', 'Status': '', 'Comment': ''
+            });
+          } else {
+            checklist.forEach(item => {
+              flatData.push({
+                'Domain ID': domain.id,
+                'Domain Title': domain.title,
+                'Audit ID': audit.id,
+                'Audit Title': audit.title,
+                'Target': audit.target,
+                'Risk': audit.risk,
+                'Item ID': item.id,
+                'Checklist Text': item.text,
+                'Status': item.status,
+                'Comment': item.comment
+              });
+            });
+          }
+        });
+      }
+    });
+    
+    const ws = XLSX.utils.json_to_sheet(flatData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Audit Plan");
+    XLSX.writeFile(wb, `Audit_Plan_${academicYear}.xlsx`);
+  };
+
+  const importFromExcel = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const bstr = evt.target.result;
+        const wb = XLSX.read(bstr, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const flatData = XLSX.utils.sheet_to_json(ws);
+
+        const domainMap = {};
+        flatData.forEach(row => {
+          const dId = row['Domain ID'] || `d${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          if (!domainMap[dId]) {
+            domainMap[dId] = {
+              id: dId,
+              title: row['Domain Title'] || 'New Domain',
+              audits: []
+            };
+          }
+          const d = domainMap[dId];
+
+          if (row['Audit ID'] || row['Audit Title']) {
+            const aId = row['Audit ID'] || `a${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            let audit = d.audits.find(a => a.id === aId);
+            if (!audit) {
+              audit = {
+                id: aId,
+                title: row['Audit Title'] || 'New Audit Engagement',
+                target: row['Target'] || '',
+                risk: row['Risk'] || 'Medium',
+                checklist: []
+              };
+              d.audits.push(audit);
+            }
+
+            if (row['Item ID'] || row['Checklist Text']) {
+              const cId = row['Item ID'] || `c${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+              let item = audit.checklist.find(c => c.id === cId);
+              if (!item) {
+                audit.checklist.push({
+                  id: cId,
+                  text: row['Checklist Text'] || '',
+                  status: row['Status'] || 'Not Started',
+                  comment: row['Comment'] || ''
+                });
+              }
+            }
+          }
+        });
+
+        const newData = Object.values(domainMap);
+        updateAndSync(newData);
+        triggerToast("Imported successfully from Excel!");
+      } catch (error) {
+        console.error("Error parsing Excel:", error);
+        triggerToast("Failed to import Excel file.");
+      }
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = null; // Reset input
   };
 
   // Helper to update state and sync with Supabase
@@ -873,9 +990,23 @@ export default function App() {
               </div>
               <div className="flex flex-col items-end">
                 {isAdmin ? (
-                  <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-widest rounded flex items-center mb-2">
-                    <Edit3 className="w-3 h-3 mr-1" /> Admin Edit Mode
-                  </span>
+                  <>
+                    <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-widest rounded flex items-center mb-2">
+                      <Edit3 className="w-3 h-3 mr-1" /> Admin Edit Mode
+                    </span>
+                    <div className="flex space-x-2 mt-2">
+                      <button 
+                        onClick={exportToExcel}
+                        className="flex items-center px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 transition"
+                      >
+                        <FileText className="w-4 h-4 mr-1" /> Export
+                      </button>
+                      <label className="flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition cursor-pointer">
+                        <Printer className="w-4 h-4 mr-1" /> Import
+                        <input type="file" accept=".xlsx, .xls" className="hidden" onChange={importFromExcel} />
+                      </label>
+                    </div>
+                  </>
                 ) : (
                   <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-widest rounded flex items-center mb-2">
                     <ShieldAlert className="w-3 h-3 mr-1" /> View Only Mode
