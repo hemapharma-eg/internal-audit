@@ -552,7 +552,7 @@ export default function App() {
             const aId = row['Sub-domain ID'] || `a${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             let subdomain = d.subdomains.find(a => a.id === aId);
             if (!subdomain) {
-              audit = {
+              subdomain = {
                 id: aId,
                 title: row['Sub-Domain'] || 'New Sub-Domain',
                 target: row['Target'] || '',
