@@ -32,13 +32,13 @@ const rawInitialData = [
   {
     id: "d1",
     title: "Domain 1: Governance, Quality Assurance & Institutional Effectiveness",
-    audits: [
+    subdomains: [
       {
         id: "a1.1",
-        title: "Audit 1.1: Quality Assurance & Accreditation Readiness Review",
+        title: "Sub-Domain 1.1: Quality Assurance & Accreditation Readiness Review",
         target: "Vice Chancellor – Quality Assurance and Institutional Effectiveness",
         risk: "High",
-        checklist: [
+        criteria: [
           { id: "c1.1.1", text: "Review CAA and international accreditation compliance gap analysis reports and verify completion status of corrective action plans." },
           { id: "c1.1.2", text: "Sample the Program Review process: Verify that curriculum updates actively map to industry requirements, alumni feedback, and employer advisory boards." },
           { id: "c1.1.3", text: "Audit the Policy Lifecycle: Check for recent reviews, formal approvals, proper version control, and dissemination of policies via the Policies Specialist." },
@@ -51,10 +51,10 @@ const rawInitialData = [
       },
       {
         id: "a1.2",
-        title: "Audit 1.2: Enterprise Governance & Committee Effectiveness",
+        title: "Sub-Domain 1.2: Enterprise Governance & Committee Effectiveness",
         target: "Board of Trustees, Chancellor's Office, University Council, Legal Advisor",
         risk: "Medium",
-        checklist: [
+        criteria: [
           { id: "c1.2.1", text: "Review meeting minutes, agendas, and quorum records for the University Council, Deans Council, and Board of Trustees for the past 12 months." },
           { id: "c1.2.2", text: "Verify the existence, annual updating, and secure storage of Conflict of Interest (COI) and Non-Disclosure declarations for all board and council members." },
           { id: "c1.2.3", text: "Assess the Delegation of Authority (DOA) matrix: Verify that actual financial, operational, and academic authorizations map correctly to the documented DOA." },
@@ -65,10 +65,10 @@ const rawInitialData = [
       },
       {
         id: "a1.3",
-        title: "Audit 1.3: Enterprise Risk Management (ERM) & Compliance Framework",
+        title: "Sub-Domain 1.3: Enterprise Risk Management (ERM) & Compliance Framework",
         target: "Audit, Risk & Compliance Committee, Compliance Office",
         risk: "High",
-        checklist: [
+        criteria: [
           { id: "c1.3.1", text: "Review the University Risk Register for completeness, updated risk scorings, assigned risk owners, and realistic mitigation timelines." },
           { id: "c1.3.2", text: "Audit the monitoring process for external regulatory changes (e.g., changes in DHA licensing requirements)." },
           { id: "c1.3.3", text: "Verify the operational effectiveness of the university's anonymous whistleblower hotline, including anonymity protections." },
@@ -81,13 +81,13 @@ const rawInitialData = [
   {
     id: "d2",
     title: "Domain 2: Academic Affairs & Student Lifecycle",
-    audits: [
+    subdomains: [
       {
         id: "a2.1",
-        title: "Audit 2.1: College Operations & Clinical Affairs Management",
+        title: "Sub-Domain 2.1: College Operations & Clinical Affairs Management",
         target: "Deans of Medicine, Pharmacy, Nursing; Associate Deans of Clinical Affairs",
         risk: "High",
-        checklist: [
+        criteria: [
           { id: "c2.1.1", text: "Sample faculty workload distribution: Ensure strict compliance with UAE higher education teaching credit limits vs. protected research/clinical time." },
           { id: "c2.1.2", text: "Review clinical rotation scheduling: Verify active, legally vetted affiliation agreements with partner hospitals/clinics." },
           { id: "c2.1.3", text: "Audit student clinical attendance logs and preceptor evaluation forms for authenticity and timely submission." },
@@ -99,10 +99,10 @@ const rawInitialData = [
       },
       {
         id: "a2.2",
-        title: "Audit 2.2: Admissions, Registration & Scholarship Integrity",
+        title: "Sub-Domain 2.2: Admissions, Registration & Scholarship Integrity",
         target: "Director of Admissions & Registration, Registrar, Scholarship Committee",
         risk: "Critical",
-        checklist: [
+        criteria: [
           { id: "c2.2.1", text: "Sample admitted student files: Verify EmSAT scores, high school equivalencies, and prerequisite science grades meet exact CAA requirements." },
           { id: "c2.2.2", text: "Audit 'Conditional Admissions': Ensure students meet conditions within the mandated timeframe or are dismissed." },
           { id: "c2.2.3", text: "Review transfer credit evaluations for compliance with university policy." },
@@ -114,10 +114,10 @@ const rawInitialData = [
       },
       {
         id: "a2.3",
-        title: "Audit 2.3: Student Well-being, Success & Engagement",
+        title: "Sub-Domain 2.3: Student Well-being, Success & Engagement",
         target: "Dean – Student Affairs, Student Wellbeing Specialist, Career Services",
         risk: "Medium",
-        checklist: [
+        criteria: [
           { id: "c2.3.1", text: "Review confidentiality protocols, secure record-keeping, and emergency escalation procedures for counseling sessions." },
           { id: "c2.3.2", text: "Evaluate counseling wait times and the ratio of mental health professionals to the student population." },
           { id: "c2.3.3", text: "Audit Student Success Centers: Review metrics on early-warning student interventions and academic probation tracking." },
@@ -132,13 +132,13 @@ const rawInitialData = [
   {
     id: "d3",
     title: "Domain 3: Academic Support & Technological Infrastructure",
-    audits: [
+    subdomains: [
       {
         id: "a3.1",
-        title: "Audit 3.1: Academic Support Technologies & SIS Integrity",
+        title: "Sub-Domain 3.1: Academic Support Technologies & SIS Integrity",
         target: "Head of Academic Support Department, Head of AI & Smart Education",
         risk: "Critical",
-        checklist: [
+        criteria: [
           { id: "c3.1.1", text: "Review formal User Access Reviews (UAR) for the SIS: Ensure RBAC is strictly enforced." },
           { id: "c3.1.2", text: "Audit system audit trails: Extract a report of manual grade changes and trace 100% of high-risk changes back to approved forms." },
           { id: "c3.1.3", text: "Test API integrations between the SIS, the LMS, and the Finance module to ensure data synchronization accuracy." },
@@ -150,10 +150,10 @@ const rawInitialData = [
       },
       {
         id: "a3.2",
-        title: "Audit 3.2: Clinical Simulation Center & Learning Resources",
+        title: "Sub-Domain 3.2: Clinical Simulation Center & Learning Resources",
         target: "Head of Simulation Center, Head of Learning Resource Center",
         risk: "Medium",
-        checklist: [
+        criteria: [
           { id: "c3.2.1", text: "Review preventative maintenance schedules and calibration logs for high-fidelity medical simulation mannequins." },
           { id: "c3.2.2", text: "Assess inventory management for consumable medical supplies in the simulation center to prevent stock-outs." },
           { id: "c3.2.3", text: "Evaluate simulation debriefing protocols: Ensure faculty are conducting mandated post-simulation debriefings and securely storing videos." },
@@ -167,13 +167,13 @@ const rawInitialData = [
   {
     id: "d4",
     title: "Domain 4: Shared Services (Financial, HR, IT, Operations)",
-    audits: [
+    subdomains: [
       {
         id: "a4.1",
-        title: "Audit 4.1: Financial Management, Procurement & Revenue Cycle",
+        title: "Sub-Domain 4.1: Financial Management, Procurement & Revenue Cycle",
         target: "Shared Services (Finance Manager, Operations Manager)",
         risk: "High",
-        checklist: [
+        criteria: [
           { id: "c4.1.1", text: "Test the 'Three-Way Match': Sample 50 high-value payments to ensure POs, Receiving Reports, and Invoices align." },
           { id: "c4.1.2", text: "Review Vendor Onboarding: Check for competitive bidding documentation and vendor conflict-of-interest screening." },
           { id: "c4.1.3", text: "Audit Capital Expenditure (CapEx): Verify major purchases are tracked against budgets and asset-tagged." },
@@ -185,10 +185,10 @@ const rawInitialData = [
       },
       {
         id: "a4.2",
-        title: "Audit 4.2: Information Technology Security & Data Privacy",
+        title: "Sub-Domain 4.2: Information Technology Security & Data Privacy",
         target: "Shared Services (IT Department)",
         risk: "Critical",
-        checklist: [
+        criteria: [
           { id: "c4.2.1", text: "Review results and remediation plans of the latest internal/external network penetration tests." },
           { id: "c4.2.2", text: "Audit IT user lifecycle management: Sample terminated employees to verify immediate access revocation." },
           { id: "c4.2.3", text: "Review Data Backup and Disaster Recovery (DR): Require documented evidence of successful full-system restoration tests." },
@@ -200,10 +200,10 @@ const rawInitialData = [
       },
       {
         id: "a4.3",
-        title: "Audit 4.3: Human Resources & Faculty Credentialing",
+        title: "Sub-Domain 4.3: Human Resources & Faculty Credentialing",
         target: "Shared Services (Senior HR Executive)",
         risk: "High",
-        checklist: [
+        criteria: [
           { id: "c4.3.1", text: "Primary Source Verification (PSV): Sample medical faculty files to ensure degrees and DHA/MOHAP licenses are validated via primary sources." },
           { id: "c4.3.2", text: "Review onboarding checklists: Ensure background checks and safeguarding training are completed before the start date." },
           { id: "c4.3.3", text: "Audit payroll processing: Reconcile payroll records against the master employee list to check for ghost employees or unauthorized allowances." },
@@ -215,10 +215,10 @@ const rawInitialData = [
       },
       {
         id: "a4.4",
-        title: "Audit 4.4: Facilities Management, HSE & PR",
+        title: "Sub-Domain 4.4: Facilities Management, HSE & PR",
         target: "Shared Services (Operations Manager, Marketing & PR, HSE Officer)",
         risk: "Medium",
-        checklist: [
+        criteria: [
           { id: "c4.4.1", text: "Check biohazard and sharps disposal protocols: Ensure contracts with certified vendors are active and logs are maintained." },
           { id: "c4.4.2", text: "Verify the completion of mandatory emergency response, chemical spill, and fire safety drills." },
           { id: "c4.4.3", text: "Audit preventative maintenance schedules for critical campus infrastructure (HVAC, labs)." },
@@ -232,13 +232,13 @@ const rawInitialData = [
   {
     id: "d5",
     title: "Domain 5: Research & Post-Graduate Education",
-    audits: [
+    subdomains: [
       {
         id: "a5.1",
-        title: "Audit 5.1: Research Ethics, Grant Management & IP",
+        title: "Sub-Domain 5.1: Research Ethics, Grant Management & IP",
         target: "Vice Chancellor – Research & Post Graduate Education, IRB, IP Specialist",
         risk: "High",
-        checklist: [
+        criteria: [
           { id: "c5.1.1", text: "Audit the IRB Process: Sample active clinical research projects to ensure formal IRB approval was granted prior to patient/data collection." },
           { id: "c5.1.2", text: "Review Conflict of Interest (COI) declarations specific to researchers." },
           { id: "c5.1.3", text: "Review Grant Financial Management: Trace expenditures to ensure funds are used strictly for intended research purposes." },
@@ -257,9 +257,9 @@ const rawInitialData = [
 const initializeData = (data) => {
   return data.map(domain => ({
     ...domain,
-    audits: domain.audits.map(audit => ({
+    subdomains: domain.subdomains.map(subdomain => ({
       ...audit,
-      checklist: audit.checklist.map(item => ({
+      criteria: subdomain.criteria.map(criterion => ({
         ...item,
         status: 'Not Started', // Not Started, In Progress, Compliant, Partially Compliant, Non-Compliant, N/A
         comment: ''
@@ -277,7 +277,7 @@ export default function App() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [expandedAudits, setExpandedAudits] = useState({});
+  const [expandedSubdomains, setExpandedSubdomains] = useState({});
   const [academicYear, setAcademicYear] = useState('2026-2027');
   
   // Auth State
@@ -376,8 +376,24 @@ export default function App() {
           .eq('id', getProjectId(academicYear))
           .single();
 
-        if (records?.state && Array.isArray(records.state) && records.state.length > 0) {
-          setData(records.state);
+        
+        let parsedState = records?.state;
+        if (parsedState && Array.isArray(parsedState)) {
+          // Migration from audits->subdomains and checklist->criteria
+          parsedState = parsedState.map(domain => {
+            let subdomains = domain.subdomains || domain.audits || [];
+            subdomains = subdomains.map(sub => {
+              let criteria = sub.criteria || sub.checklist || [];
+              const { checklist, ...restSub } = sub;
+              return { ...restSub, criteria };
+            });
+            const { audits, ...restDomain } = domain;
+            return { ...restDomain, subdomains };
+          });
+        }
+
+        if (parsedState && parsedState.length > 0) {
+          setData(parsedState);
         } else {
           console.warn('No data from Supabase, using local initial data.');
           const enriched = initializeData(rawInitialData);
@@ -456,40 +472,40 @@ export default function App() {
   const exportToExcel = () => {
     const flatData = [];
     data.forEach(domain => {
-      const audits = domain.audits || [];
+      const audits = domain.subdomains || [];
       if (audits.length === 0) {
         flatData.push({
           'Domain ID': domain.id,
           'Domain Title': domain.title,
-          'Audit ID': '', 'Audit Title': '', 'Target': '', 'Risk': '',
-          'Item ID': '', 'Checklist Text': '', 'Status': '', 'Comment': ''
+          'Sub-domain ID': '', 'Sub-Domain': '', 'Target': '', 'Risk': '',
+          'Criteria ID': '', 'Criteria': '', 'Status': '', 'Comment': ''
         });
       } else {
-        audits.forEach(audit => {
-          const checklist = audit.checklist || [];
+        audits.forEach(subdomain => {
+          const checklist = subdomain.criteria || [];
           if (checklist.length === 0) {
             flatData.push({
               'Domain ID': domain.id,
               'Domain Title': domain.title,
-              'Audit ID': audit.id,
-              'Audit Title': audit.title,
-              'Target': audit.target,
-              'Risk': audit.risk,
-              'Item ID': '', 'Checklist Text': '', 'Status': '', 'Comment': ''
+              'Sub-domain ID': subdomain.id,
+              'Sub-Domain': subdomain.title,
+              'Target': subdomain.target,
+              'Risk': subdomain.risk,
+              'Criteria ID': '', 'Criteria': '', 'Status': '', 'Comment': ''
             });
           } else {
-            checklist.forEach(item => {
+            checklist.forEach(criterion => {
               flatData.push({
                 'Domain ID': domain.id,
                 'Domain Title': domain.title,
-                'Audit ID': audit.id,
-                'Audit Title': audit.title,
-                'Target': audit.target,
-                'Risk': audit.risk,
-                'Item ID': item.id,
-                'Checklist Text': item.text,
-                'Status': item.status,
-                'Comment': item.comment
+                'Sub-domain ID': subdomain.id,
+                'Sub-Domain': subdomain.title,
+                'Target': subdomain.target,
+                'Risk': subdomain.risk,
+                'Criteria ID': criterion.id,
+                'Criteria': criterion.text,
+                'Status': criterion.status,
+                'Comment': criterion.comment
               });
             });
           }
@@ -523,32 +539,32 @@ export default function App() {
             domainMap[dId] = {
               id: dId,
               title: row['Domain Title'] || 'New Domain',
-              audits: []
+              subdomains: []
             };
           }
           const d = domainMap[dId];
 
-          if (row['Audit ID'] || row['Audit Title']) {
-            const aId = row['Audit ID'] || `a${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            let audit = d.audits.find(a => a.id === aId);
-            if (!audit) {
+          if (row['Sub-domain ID'] || row['Sub-Domain']) {
+            const aId = row['Sub-domain ID'] || `a${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            let subdomain = d.subdomains.find(a => a.id === aId);
+            if (!subdomain) {
               audit = {
                 id: aId,
-                title: row['Audit Title'] || 'New Audit Engagement',
+                title: row['Sub-Domain'] || 'New Sub-Domain',
                 target: row['Target'] || '',
                 risk: row['Risk'] || 'Medium',
-                checklist: []
+                criteria: []
               };
-              d.audits.push(audit);
+              d.subdomains.push(subdomain);
             }
 
-            if (row['Item ID'] || row['Checklist Text']) {
-              const cId = row['Item ID'] || `c${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-              let item = audit.checklist.find(c => c.id === cId);
-              if (!item) {
-                audit.checklist.push({
+            if (row['Criteria ID'] || row['Criteria']) {
+              const cId = row['Criteria ID'] || `c${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+              let criterion = subdomain.criteria.find(c => c.id === cId);
+              if (!criterion) {
+                subdomain.criteria.push({
                   id: cId,
-                  text: row['Checklist Text'] || '',
+                  text: row['Criteria'] || '',
                   status: row['Status'] || 'Not Started',
                   comment: row['Comment'] || ''
                 });
@@ -576,17 +592,17 @@ export default function App() {
   };
 
   // Helper to update a specific item's field (status, text, comment)
-  const updateItem = (domainId, auditId, itemId, field, value) => {
+  const updateCriterion = (domainId, subdomainId, criterionId, field, value) => {
     const newData = data.map(domain => {
       if (domain.id !== domainId) return domain;
       return {
         ...domain,
-        audits: domain.audits.map(audit => {
-          if (audit.id !== auditId) return audit;
+        subdomains: domain.subdomains.map(subdomain => {
+          if (subdomain.id !== subdomainId) return audit;
           return {
             ...audit,
-            checklist: audit.checklist.map(item => {
-              if (item.id !== itemId) return item;
+            criteria: subdomain.criteria.map(criterion => {
+              if (criterion.id !== criterionId) return item;
               return { ...item, [field]: value };
             })
           };
@@ -603,7 +619,7 @@ export default function App() {
   };
   
   const addDomain = () => {
-    const newDomain = { id: `d${Date.now()}`, title: "New Domain", audits: [] };
+    const newDomain = { id: `d${Date.now()}`, title: "New Domain", subdomains: [] };
     const newData = [...data, newDomain];
     updateAndSync(newData);
   };
@@ -613,47 +629,47 @@ export default function App() {
     updateAndSync(newData);
   };
 
-  const updateAudit = (domainId, auditId, field, value) => {
+  const updateSubdomain = (domainId, subdomainId, field, value) => {
     const newData = data.map(d => d.id === domainId ? {
-      ...d, audits: d.audits.map(a => a.id === auditId ? { ...a, [field]: value } : a)
+      ...d, subdomains: d.subdomains.map(a => a.id === subdomainId ? { ...a, [field]: value } : a)
     } : d);
     updateAndSync(newData);
   };
 
-  const addAudit = (domainId) => {
+  const addSubdomain = (domainId) => {
     const newAudit = {
       id: `a${Date.now()}`,
-      title: "New Audit Engagement",
+      title: "New Sub-Domain",
       target: "Target Area",
       risk: "Medium",
-      checklist: []
+      criteria: []
     };
-    const newData = data.map(d => d.id === domainId ? { ...d, audits: [...d.audits, newAudit] } : d);
+    const newData = data.map(d => d.id === domainId ? { ...d, subdomains: [...d.subdomains, newAudit] } : d);
     updateAndSync(newData);
   };
 
-  const deleteAudit = (domainId, auditId) => {
-    const newData = data.map(d => d.id === domainId ? { ...d, audits: d.audits.filter(a => a.id !== auditId) } : d);
+  const deleteSubdomain = (domainId, subdomainId) => {
+    const newData = data.map(d => d.id === domainId ? { ...d, subdomains: d.subdomains.filter(a => a.id !== subdomainId) } : d);
     updateAndSync(newData);
   };
 
-  const addItem = (domainId, auditId) => {
-    const newItem = { id: `c${Date.now()}`, text: "New checklist requirement...", status: 'Not Started', comment: '' };
+  const addCriterion = (domainId, subdomainId) => {
+    const newItem = { id: `c${Date.now()}`, text: "New criteria requirement...", status: 'Not Started', comment: '' };
     const newData = data.map(d => d.id === domainId ? {
-      ...d, audits: d.audits.map(a => a.id === auditId ? { ...a, checklist: [...a.checklist, newItem] } : a)
+      ...d, subdomains: d.subdomains.map(a => a.id === subdomainId ? { ...a, criteria: [...a.criteria, newItem] } : a)
     } : d);
     updateAndSync(newData);
   };
 
-  const deleteItem = (domainId, auditId, itemId) => {
+  const deleteCriterion = (domainId, subdomainId, criterionId) => {
     const newData = data.map(d => d.id === domainId ? {
-      ...d, audits: d.audits.map(a => a.id === auditId ? { ...a, checklist: a.checklist.filter(c => c.id !== itemId) } : a)
+      ...d, subdomains: d.subdomains.map(a => a.id === subdomainId ? { ...a, criteria: a.criteria.filter(c => c.id !== criterionId) } : a)
     } : d);
     updateAndSync(newData);
   };
 
-  const toggleAuditAccordion = (auditId) => {
-    setExpandedAudits(prev => ({ ...prev, [auditId]: !prev[auditId] }));
+  const toggleSubdomainAccordion = (subdomainId) => {
+    setExpandedSubdomains(prev => ({ ...prev, [subdomainId]: !prev[subdomainId] }));
   };
 
   const handleShareLink = () => {
@@ -701,16 +717,16 @@ export default function App() {
         let dCompleted = 0;
         
         // Safety check for audits
-        const audits = domain.audits || [];
+        const audits = domain.subdomains || [];
         
-        audits.forEach(audit => {
+        audits.forEach(subdomain => {
           // Safety check for checklist
-          const checklist = audit.checklist || [];
+          const checklist = subdomain.criteria || [];
           
-          checklist.forEach(item => {
+          checklist.forEach(criterion => {
             dTotal++;
             totalItems++;
-            if (isDone(item.status)) {
+            if (isDone(criterion.status)) {
               dCompleted++;
               completedItems++;
             }
@@ -743,23 +759,23 @@ export default function App() {
     if (!data || !Array.isArray(data)) return [];
 
     return data.map(domain => {
-      const audits = domain.audits || [];
-      const filteredAudits = audits.map(audit => {
-        if (reportFilters.risk !== 'All' && audit.risk !== reportFilters.risk) return null;
+      const audits = domain.subdomains || [];
+      const filteredSubdomains = audits.map(subdomain => {
+        if (reportFilters.risk !== 'All' && subdomain.risk !== reportFilters.risk) return null;
         
-        const checklist = audit.checklist || [];
-        const filteredChecklist = checklist.filter(item => {
+        const checklist = subdomain.criteria || [];
+        const filteredCriteria = checklist.filter(criterion => {
           if (reportFilters.status === 'All') return true;
-          return item.status === reportFilters.status;
+          return criterion.status === reportFilters.status;
         });
 
-        if (filteredChecklist.length === 0 && reportFilters.status !== 'All') return null;
+        if (filteredCriteria.length === 0 && reportFilters.status !== 'All') return null;
 
-        return { ...audit, checklist: filteredChecklist };
+        return { ...audit, criteria: filteredCriteria };
       }).filter(Boolean);
 
-      return { ...domain, audits: filteredAudits };
-    }).filter(domain => (domain.audits || []).length > 0);
+      return { ...domain, subdomains: filteredSubdomains };
+    }).filter(domain => (domain.subdomains || []).length > 0);
   }, [data, reportFilters]);
 
   // --- EARLY RETURNS (all hooks must be above this line) ---
@@ -1038,35 +1054,35 @@ export default function App() {
                   </div>
                   
                   <div className="space-y-4">
-                    {domain.audits.map(audit => {
-                      const isExpanded = expandedAudits[audit.id];
-                      const isFullyComplete = audit.checklist.length > 0 && audit.checklist.every(c => ['Compliant', 'Partially Compliant', 'Non-Compliant', 'N/A'].includes(c.status));
+                    {domain.subdomains.map(subdomain => {
+                      const isExpanded = expandedSubdomains[subdomain.id];
+                      const isFullyComplete = subdomain.criteria.length > 0 && subdomain.criteria.every(c => ['Compliant', 'Partially Compliant', 'Non-Compliant', 'N/A'].includes(c.status));
 
                       return (
-                        <div key={audit.id} className={`bg-white rounded-xl border shadow-sm overflow-hidden transition-all ${isFullyComplete && !isAdmin ? 'border-emerald-200' : 'border-gray-200'}`}>
+                        <div key={subdomain.id} className={`bg-white rounded-xl border shadow-sm overflow-hidden transition-all ${isFullyComplete && !isAdmin ? 'border-emerald-200' : 'border-gray-200'}`}>
                           
                           {/* Accordion Header */}
                           <div 
                             className={`p-5 flex justify-between items-start ${isFullyComplete && !isAdmin ? 'bg-emerald-50/30' : ''}`}
                           >
-                            <div className="flex-1 pr-4 cursor-pointer" onClick={() => toggleAuditAccordion(audit.id)}>
+                            <div className="flex-1 pr-4 cursor-pointer" onClick={() => toggleSubdomainAccordion(subdomain.id)}>
                               <div className="flex items-start space-x-3 mb-1 flex-col md:flex-row md:items-center">
                                 {isAdmin ? (
                                   <input 
-                                    value={audit.title} 
-                                    onChange={(e) => updateAudit(domain.id, audit.id, 'title', e.target.value)} 
+                                    value={subdomain.title} 
+                                    onChange={(e) => updateSubdomain(domain.id, subdomain.id, 'title', e.target.value)} 
                                     className="font-bold text-lg text-gray-900 border border-blue-300 rounded px-2 py-1 w-full flex-1 mb-2 md:mb-0 outline-none focus:ring-2 focus:ring-blue-500" 
                                   />
                                 ) : (
                                   <h3 className={`font-bold text-lg ${isFullyComplete ? 'text-emerald-800' : 'text-gray-900'}`}>
-                                    {audit.title}
+                                    {subdomain.title}
                                   </h3>
                                 )}
                                 
                                 {isAdmin ? (
                                   <select 
-                                    value={audit.risk} 
-                                    onChange={(e) => updateAudit(domain.id, audit.id, 'risk', e.target.value)}
+                                    value={subdomain.risk} 
+                                    onChange={(e) => updateSubdomain(domain.id, subdomain.id, 'risk', e.target.value)}
                                     className="text-sm font-medium border border-blue-300 rounded p-1.5 outline-none focus:ring-2 focus:ring-blue-500"
                                   >
                                     <option value="Critical">Critical</option>
@@ -1075,8 +1091,8 @@ export default function App() {
                                     <option value="Low">Low</option>
                                   </select>
                                 ) : (
-                                  <span className={`flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap mt-2 md:mt-0 ${getRiskColor(audit.risk)}`}>
-                                    {audit.risk} Risk
+                                  <span className={`flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap mt-2 md:mt-0 ${getRiskColor(subdomain.risk)}`}>
+                                    {subdomain.risk} Risk
                                   </span>
                                 )}
                               </div>
@@ -1085,23 +1101,23 @@ export default function App() {
                                 <strong className="mr-2">Target:</strong>
                                 {isAdmin ? (
                                   <input 
-                                    value={audit.target} 
-                                    onChange={(e) => updateAudit(domain.id, audit.id, 'target', e.target.value)} 
+                                    value={subdomain.target} 
+                                    onChange={(e) => updateSubdomain(domain.id, subdomain.id, 'target', e.target.value)} 
                                     className="flex-1 border border-blue-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500" 
                                   />
                                 ) : (
-                                  <span>{audit.target}</span>
+                                  <span>{subdomain.target}</span>
                                 )}
                               </div>
                             </div>
                             
                             <div className="flex items-center space-x-4 mt-2 md:mt-0">
                               {isAdmin && (
-                                <button onClick={(e) => { e.stopPropagation(); deleteAudit(domain.id, audit.id); }} className="text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors" title="Delete Audit">
+                                <button onClick={(e) => { e.stopPropagation(); deleteSubdomain(domain.id, subdomain.id); }} className="text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors" title="Delete Sub-Domain">
                                   <Trash2 className="w-5 h-5" />
                                 </button>
                               )}
-                              <button onClick={() => toggleAuditAccordion(audit.id)} className="p-1 hover:bg-gray-100 rounded">
+                              <button onClick={() => toggleSubdomainAccordion(subdomain.id)} className="p-1 hover:bg-gray-100 rounded">
                                 {isExpanded ? <ChevronUp className="text-gray-400" /> : <ChevronDown className="text-gray-400" />}
                               </button>
                             </div>
@@ -1111,18 +1127,18 @@ export default function App() {
                           {isExpanded && (
                             <div className="p-5 border-t border-gray-100 bg-gray-50/50">
                               <ul className="space-y-4">
-                                {audit.checklist.map(item => (
+                                {subdomain.criteria.map(criterion => (
                                   <li 
-                                    key={item.id}
-                                    className={`p-4 rounded-lg border transition-all ${item.status === 'Compliant' ? 'bg-emerald-50/30 border-emerald-200' : item.status === 'Partially Compliant' ? 'bg-yellow-50/30 border-yellow-200' : item.status === 'Non-Compliant' ? 'bg-red-50/30 border-red-200' : 'bg-white border-gray-200 shadow-sm'}`}
+                                    key={criterion.id}
+                                    className={`p-4 rounded-lg border transition-all ${criterion.status === 'Compliant' ? 'bg-emerald-50/30 border-emerald-200' : criterion.status === 'Partially Compliant' ? 'bg-yellow-50/30 border-yellow-200' : criterion.status === 'Non-Compliant' ? 'bg-red-50/30 border-red-200' : 'bg-white border-gray-200 shadow-sm'}`}
                                   >
                                     <div className="flex flex-col md:flex-row md:items-start space-y-3 md:space-y-0 md:space-x-4">
                                       <div className="flex-shrink-0 w-full md:w-44">
                                         <select
-                                          value={item.status}
+                                          value={criterion.status}
                                           disabled={!isAuthenticated}
-                                          onChange={(e) => updateItem(domain.id, audit.id, item.id, 'status', e.target.value)}
-                                          className={`w-full text-sm font-semibold rounded p-2 border outline-none cursor-pointer ${getStatusColor(item.status)} disabled:opacity-80 disabled:cursor-not-allowed`}
+                                          onChange={(e) => updateCriterion(domain.id, subdomain.id, criterion.id, 'status', e.target.value)}
+                                          className={`w-full text-sm font-semibold rounded p-2 border outline-none cursor-pointer ${getStatusColor(criterion.status)} disabled:opacity-80 disabled:cursor-not-allowed`}
                                         >
                                           {STATUS_OPTIONS.map(opt => (
                                             <option key={opt} value={opt} className="bg-white text-gray-900">{opt}</option>
@@ -1133,18 +1149,18 @@ export default function App() {
                                       <div className="flex-1 flex items-start space-x-2">
                                         {isAdmin ? (
                                           <textarea 
-                                            value={item.text}
-                                            onChange={(e) => updateItem(domain.id, audit.id, item.id, 'text', e.target.value)}
+                                            value={criterion.text}
+                                            onChange={(e) => updateCriterion(domain.id, subdomain.id, criterion.id, 'text', e.target.value)}
                                             className="w-full text-sm text-gray-900 bg-white border border-blue-300 rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[60px]"
                                             placeholder="Edit checklist requirement..."
                                           />
                                         ) : (
-                                          <div className={`w-full text-sm leading-relaxed ${['Compliant', 'N/A'].includes(item.status) ? 'text-gray-500' : 'text-gray-800 font-medium'}`}>
-                                            {item.text}
+                                          <div className={`w-full text-sm leading-relaxed ${['Compliant', 'N/A'].includes(criterion.status) ? 'text-gray-500' : 'text-gray-800 font-medium'}`}>
+                                            {criterion.text}
                                           </div>
                                         )}
                                         {isAdmin && (
-                                          <button onClick={() => deleteItem(domain.id, audit.id, item.id)} className="text-red-400 hover:text-red-600 p-1 flex-shrink-0" title="Delete Item">
+                                          <button onClick={() => deleteCriterion(domain.id, subdomain.id, criterion.id)} className="text-red-400 hover:text-red-600 p-1 flex-shrink-0" title="Delete Item">
                                             <Trash2 className="w-4 h-4" />
                                           </button>
                                         )}
@@ -1154,9 +1170,9 @@ export default function App() {
                                     <div className="mt-3 pt-3 border-t border-gray-100 flex items-start space-x-2">
                                       <MessageSquare className="w-4 h-4 text-slate-400 mt-2 flex-shrink-0" />
                                       <textarea
-                                        value={item.comment}
+                                        value={criterion.comment}
                                         readOnly={!isAdmin}
-                                        onChange={(e) => updateItem(domain.id, audit.id, item.id, 'comment', e.target.value)}
+                                        onChange={(e) => updateCriterion(domain.id, subdomain.id, criterion.id, 'comment', e.target.value)}
                                         placeholder={isAdmin ? "Add findings/evidence..." : "No findings recorded."}
                                         className="w-full text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded p-2 focus:ring-1 focus:ring-blue-400 outline-none resize-y min-h-[60px] read-only:bg-transparent read-only:border-transparent"
                                       />
@@ -1166,7 +1182,7 @@ export default function App() {
                               </ul>
                               
                               {isAdmin && (
-                                <button onClick={() => addItem(domain.id, audit.id)} className="mt-4 flex items-center space-x-2 text-sm text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg border border-dashed border-blue-300 w-full justify-center transition-colors">
+                                <button onClick={() => addCriterion(domain.id, subdomain.id)} className="mt-4 flex items-center space-x-2 text-sm text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg border border-dashed border-blue-300 w-full justify-center transition-colors">
                                   <Plus className="w-4 h-4" />
                                   <span className="font-medium">Add New Checklist Item</span>
                                 </button>
@@ -1178,7 +1194,7 @@ export default function App() {
                     })}
                     
                     {isAdmin && (
-                      <button onClick={() => addAudit(domain.id)} className="flex items-center space-x-2 text-sm text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-4 py-3 rounded-lg border border-dashed border-slate-300 w-full justify-center transition-colors">
+                      <button onClick={() => addSubdomain(domain.id)} className="flex items-center space-x-2 text-sm text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-4 py-3 rounded-lg border border-dashed border-slate-300 w-full justify-center transition-colors">
                         <Plus className="w-4 h-4" />
                         <span className="font-medium">Add New Audit Engagement</span>
                       </button>
@@ -1293,35 +1309,35 @@ export default function App() {
                       </h4>
                       
                       <div className="space-y-8">
-                        {domain.audits.map(audit => (
-                          <div key={audit.id} className="pl-4 border-l-4 border-slate-200">
+                        {domain.subdomains.map(subdomain => (
+                          <div key={subdomain.id} className="pl-4 border-l-4 border-slate-200">
                             <div className="flex justify-between items-start mb-3">
                               <div>
-                                <h5 className="font-bold text-slate-800 text-md">{audit.title}</h5>
-                                <p className="text-xs text-slate-500 mt-0.5"><strong>Target:</strong> {audit.target}</p>
+                                <h5 className="font-bold text-slate-800 text-md">{subdomain.title}</h5>
+                                <p className="text-xs text-slate-500 mt-0.5"><strong>Target:</strong> {subdomain.target}</p>
                               </div>
-                              <span className={`inline-block px-3 py-1 rounded text-xs font-bold border ${getRiskColor(audit.risk)}`}>
-                                {audit.risk} Risk
+                              <span className={`inline-block px-3 py-1 rounded text-xs font-bold border ${getRiskColor(subdomain.risk)}`}>
+                                {subdomain.risk} Risk
                               </span>
                             </div>
                             
                             <div className="space-y-4 mt-4">
-                              {audit.checklist.map(item => (
-                                <div key={item.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                              {subdomain.criteria.map(criterion => (
+                                <div key={criterion.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                                   <div className="flex items-start space-x-3 mb-2">
-                                    <span className={`flex-shrink-0 mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${getStatusColor(item.status)}`}>
-                                      {item.status}
+                                    <span className={`flex-shrink-0 mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${getStatusColor(criterion.status)}`}>
+                                      {criterion.status}
                                     </span>
                                     <p className="text-sm text-slate-800 font-medium leading-relaxed">
-                                      {item.text}
+                                      {criterion.text}
                                     </p>
                                   </div>
                                   
-                                  {item.comment && (
+                                  {criterion.comment && (
                                     <div className="ml-16 mt-2 pt-2 border-t border-gray-200 flex items-start space-x-2">
                                       <MessageSquare className="w-3 h-3 text-slate-400 mt-0.5 flex-shrink-0" />
                                       <p className="text-xs text-slate-600 italic whitespace-pre-wrap">
-                                        {item.comment}
+                                        {criterion.comment}
                                       </p>
                                     </div>
                                   )}
