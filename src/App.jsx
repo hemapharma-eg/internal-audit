@@ -473,41 +473,57 @@ export default function App() {
 
   // Calculate Progress Stats
   const stats = useMemo(() => {
-    if (!data || data.length === 0) return { overallProgress: 0, completedItems: 0, totalItems: 0, domainProgress: [] };
+    // Return early if data is missing
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      return { overallProgress: 0, completedItems: 0, totalItems: 0, domainProgress: [] };
+    }
     
     let totalItems = 0;
     let completedItems = 0;
     
     const isDone = (status) => ['Compliant', 'Partially Compliant', 'Non-Compliant', 'N/A'].includes(status);
 
-    const domainProgress = data.map(domain => {
-      let dTotal = 0;
-      let dCompleted = 0;
-      domain.audits.forEach(audit => {
-        audit.checklist.forEach(item => {
-          dTotal++;
-          totalItems++;
-          if (isDone(item.status)) {
-            dCompleted++;
-            completedItems++;
-          }
+    try {
+      const domainProgress = data.map(domain => {
+        let dTotal = 0;
+        let dCompleted = 0;
+        
+        // Safety check for audits
+        const audits = domain.audits || [];
+        
+        audits.forEach(audit => {
+          // Safety check for checklist
+          const checklist = audit.checklist || [];
+          
+          checklist.forEach(item => {
+            dTotal++;
+            totalItems++;
+            if (isDone(item.status)) {
+              dCompleted++;
+              completedItems++;
+            }
+          });
         });
-      });
-      return { 
-        id: domain.id, 
-        title: domain.title, 
-        progress: dTotal === 0 ? 0 : Math.round((dCompleted / dTotal) * 100),
-        completed: dCompleted,
-        total: dTotal
-      };
-    });
 
-    return {
-      overallProgress: totalItems === 0 ? 0 : Math.round((completedItems / totalItems) * 100),
-      completedItems,
-      totalItems,
-      domainProgress
-    };
+        return { 
+          id: domain.id, 
+          title: domain.title || "Untitled Domain", 
+          progress: dTotal === 0 ? 0 : Math.round((dCompleted / dTotal) * 100),
+          completed: dCompleted,
+          total: dTotal
+        };
+      });
+
+      return {
+        overallProgress: totalItems === 0 ? 0 : Math.round((completedItems / totalItems) * 100),
+        completedItems,
+        totalItems,
+        domainProgress
+      };
+    } catch (err) {
+      console.error("Stats calculation error:", err);
+      return { overallProgress: 0, completedItems: 0, totalItems: 0, domainProgress: [] };
+    }
   }, [data]);
 
   if (!isAuthenticated) {
