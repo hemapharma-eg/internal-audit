@@ -283,7 +283,7 @@ export default function App() {
   
   // Auth State
   const [session, setSession] = useState(null);
-  const [userRole, setUserRole] = useState('viewer');
+  const [userRole, setUserRole] = useState('user');
   const [userEmail, setUserEmail] = useState('');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPass, setLoginPass] = useState('');
@@ -309,7 +309,8 @@ export default function App() {
   // Report Filters
   const [reportFilters, setReportFilters] = useState({
     risk: 'All',
-    status: 'All'
+    status: 'All',
+    domain: 'All'
   });
 
   // 0. Auth Session Listener
@@ -328,7 +329,7 @@ export default function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
       if (event === 'SIGNED_OUT') {
         setSession(null);
-        setUserRole('viewer');
+        setUserRole('user');
         setUserEmail('');
         setData([]);
       } else if (event === 'TOKEN_REFRESHED' && s) {
@@ -353,11 +354,11 @@ export default function App() {
       if (roleData?.role) {
         setUserRole(roleData.role);
       } else {
-        setUserRole('viewer');
+        setUserRole('user');
       }
     } catch (err) {
-      console.warn('Could not fetch role, defaulting to viewer:', err);
-      setUserRole('viewer');
+      console.warn('Could not fetch role, defaulting to user:', err);
+      setUserRole('user');
     }
   };
 
@@ -423,7 +424,7 @@ export default function App() {
 
   // 2. Save function
   const saveToSupabase = async (currentData) => {
-    if (!isAuthenticated) return; // Prevent public visitors from saving, but allow all logged-in users (admins + viewers) to save
+    if (!isAuthenticated) return; // Prevent public visitors from saving, but allow all logged-in users (admins + users) to save
 
     try {
       const { error } = await supabase
@@ -464,7 +465,7 @@ export default function App() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setSession(null);
-    setUserRole('viewer');
+    setUserRole('user');
     setUserEmail('');
     setData([]);
   };
@@ -769,7 +770,7 @@ export default function App() {
   const filteredReportData = useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
 
-    return data.map(domain => {
+    return data.filter(domain => reportFilters.domain === 'All' || domain.id === reportFilters.domain).map(domain => {
       const audits = domain.subdomains || [];
       const filteredSubdomains = audits.map(subdomain => {
         if (reportFilters.risk !== 'All' && subdomain.risk !== reportFilters.risk) return null;
@@ -961,7 +962,7 @@ export default function App() {
             <header className="mb-8 flex justify-between items-end">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Audit Plan Dashboard</h1>
-                <p className="text-gray-500 mt-2">Dubai Medical University - FY {academicYear}</p>
+                <p className="text-gray-500 mt-2">Dubai Medical University - FY {academicYear || 'Not Selected'}</p>
               </div>
               <button onClick={handleShareLink} className="flex items-center space-x-2 text-sm font-medium text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg transition border border-blue-200">
                 <LinkIcon className="w-4 h-4" />
@@ -969,41 +970,51 @@ export default function App() {
               </button>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center items-center">
-                <div className="text-5xl font-bold text-blue-600 mb-2">{stats.overallProgress}%</div>
-                <div className="text-gray-500 font-medium">Plan Completed</div>
+            {!academicYear ? (
+              <div className="text-center py-20 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <AlertCircle className="w-12 h-12 text-blue-400 mx-auto mb-3" />
+                <h3 className="text-xl font-bold text-gray-800">No Academic Year Selected</h3>
+                <p className="text-gray-500 mt-2">Please select an academic year from the sidebar to begin.</p>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center items-center">
-                <div className="text-5xl font-bold text-emerald-600 mb-2">{stats.completedItems}</div>
-                <div className="text-gray-500 font-medium">Items Finalized</div>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center items-center">
-                <div className="text-5xl font-bold text-slate-700 mb-2">{stats.totalItems - stats.completedItems}</div>
-                <div className="text-gray-500 font-medium">Items Pending</div>
-              </div>
-            </div>
-
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Progress by Domain</h2>
-            <div className="space-y-4">
-              {stats.domainProgress.map(domain => (
-                <div key={domain.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="font-bold text-gray-800">{domain.title}</h3>
-                    <span className="text-sm font-semibold bg-gray-100 text-gray-600 py-1 px-3 rounded-full">
-                      {domain.completed} / {domain.total} Done
-                    </span>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center items-center">
+                    <div className="text-5xl font-bold text-blue-600 mb-2">{stats.overallProgress}%</div>
+                    <div className="text-gray-500 font-medium">Plan Completed</div>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-                    <div 
-                      className="bg-blue-600 h-3 rounded-full transition-all duration-500" 
-                      style={{ width: `${domain.progress}%` }}
-                    ></div>
+                  <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center items-center">
+                    <div className="text-5xl font-bold text-emerald-600 mb-2">{stats.completedItems}</div>
+                    <div className="text-gray-500 font-medium">Items Finalized</div>
                   </div>
-                  <div className="text-right text-sm font-medium text-gray-500">{domain.progress}%</div>
+                  <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center items-center">
+                    <div className="text-5xl font-bold text-slate-700 mb-2">{stats.totalItems - stats.completedItems}</div>
+                    <div className="text-gray-500 font-medium">Items Pending</div>
+                  </div>
                 </div>
-              ))}
-            </div>
+
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Progress by Domain</h2>
+                <div className="space-y-4">
+                  {stats.domainProgress.map(domain => (
+                    <div key={domain.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="font-bold text-gray-800">{domain.title}</h3>
+                        <span className="text-sm font-semibold bg-gray-100 text-gray-600 py-1 px-3 rounded-full">
+                          {domain.completed} / {domain.total} Done
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+                        <div 
+                          className="bg-blue-600 h-3 rounded-full transition-all duration-500" 
+                          style={{ width: `${domain.progress}%` }}
+                        ></div>
+                      </div>
+                      <div className="text-right text-sm font-medium text-gray-500">{domain.progress}%</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -1287,41 +1298,73 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center space-x-6">
-                <div className="flex items-center space-x-2 text-gray-500 font-medium">
-                  <Filter className="w-5 h-5" />
-                  <span>Filters:</span>
+              {!academicYear ? (
+                <div className="text-center py-20 bg-white rounded-xl border border-gray-200 shadow-sm">
+                  <AlertCircle className="w-12 h-12 text-blue-400 mx-auto mb-3" />
+                  <h3 className="text-xl font-bold text-gray-800">No Academic Year Selected</h3>
+                  <p className="text-gray-500 mt-2">Please select an academic year from the sidebar to begin.</p>
                 </div>
-                
-                <div className="flex items-center space-x-2">
-                  <label className="text-sm text-gray-600">Risk Level:</label>
-                  <select 
-                    value={reportFilters.risk} 
-                    onChange={(e) => setReportFilters(prev => ({...prev, risk: e.target.value}))}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 p-2"
-                  >
-                    <option value="All">All Risks</option>
-                    <option value="Critical">Critical</option>
-                    <option value="High">High</option>
-                    <option value="Medium">Medium</option>
-                  </select>
+              ) : (
+                <>
+                  <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-wrap items-center gap-6">
+                    <div className="flex items-center space-x-2 text-gray-500 font-medium">
+                      <Filter className="w-5 h-5" />
+                      <span>Filters:</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm text-gray-600">Academic Year:</label>
+                      <select 
+                        value={academicYear} 
+                        onChange={(e) => setAcademicYear(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 p-2"
+                      >
+                        <option value="" disabled>Select Year</option>
+                        {ACADEMIC_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm text-gray-600">Domain:</label>
+                      <select 
+                        value={reportFilters.domain} 
+                        onChange={(e) => setReportFilters(prev => ({...prev, domain: e.target.value}))}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 p-2 max-w-xs"
+                      >
+                        <option value="All">All Domains</option>
+                        {data.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm text-gray-600">Risk Level:</label>
+                      <select 
+                        value={reportFilters.risk} 
+                        onChange={(e) => setReportFilters(prev => ({...prev, risk: e.target.value}))}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 p-2"
+                      >
+                        <option value="All">All Risks</option>
+                        <option value="Critical">Critical</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm text-gray-600">Status Rubric:</label>
+                      <select 
+                        value={reportFilters.status} 
+                        onChange={(e) => setReportFilters(prev => ({...prev, status: e.target.value}))}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 p-2"
+                      >
+                        <option value="All">All Statuses</option>
+                        {STATUS_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <label className="text-sm text-gray-600">Status Rubric:</label>
-                  <select 
-                    value={reportFilters.status} 
-                    onChange={(e) => setReportFilters(prev => ({...prev, status: e.target.value}))}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 p-2"
-                  >
-                    <option value="All">All Statuses</option>
-                    {STATUS_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-10 print:border-none print:shadow-none print:p-4">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-10 print:border-none print:shadow-none print:p-4">
               
               <div className="text-center mb-10 border-b-2 border-slate-800 pb-8">
                 <h1 className="text-4xl font-serif font-bold text-slate-900 mb-2">Dubai Medical University</h1>
@@ -1409,6 +1452,8 @@ export default function App() {
               </div>
 
             </div>
+            </>
+            )}
           </div>
         )}
 
