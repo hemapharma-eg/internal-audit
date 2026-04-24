@@ -295,14 +295,14 @@ export default function App() {
     status: 'All'
   });
 
-  // 1. Initial Load from Supabase
+  // 1. Initial Load from Supabase (with fallback to local data)
   useEffect(() => {
     if (!isAuthenticated) {
-      setLoading(false); // Stop loading if we need to show login
+      setLoading(false);
       return;
     }
 
-    setLoading(true); // Start loading when auth changes to true
+    setLoading(true);
     const fetchData = async () => {
       try {
         const { data: records, error } = await supabase
@@ -311,26 +311,29 @@ export default function App() {
           .eq('id', PROJECT_ID)
           .single();
 
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching data:', error);
-        }
-
-        if (records?.state) {
+        if (records?.state && Array.isArray(records.state) && records.state.length > 0) {
           setData(records.state);
         } else {
+          // No data in DB or error — use local initial data
+          console.warn('No data from Supabase, using local initial data.');
           const enriched = initializeData(rawInitialData);
           setData(enriched);
-          if (isAdmin) await saveToSupabase(enriched);
+          if (isAdmin) {
+            try { await saveToSupabase(enriched); } catch(e) { /* ignore save errors */ }
+          }
         }
       } catch (err) {
-        console.error('Fetch error:', err);
+        // Supabase completely failed — ALWAYS fall back to local data
+        console.error('Supabase fetch failed, using local data:', err);
+        const enriched = initializeData(rawInitialData);
+        setData(enriched);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [isAuthenticated, userRole]); // Re-run when auth or role changes
+  }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 2. Save function
   const saveToSupabase = async (currentData) => {
