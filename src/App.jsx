@@ -980,7 +980,7 @@ export default function App() {
                                           value={item.status}
                                           disabled={!isAdmin}
                                           onChange={(e) => updateItem(domain.id, audit.id, item.id, 'status', e.target.value)}
-                                          className={`w-full text-sm font-semibold rounded p-2 border outline-none cursor-pointer appearance-none ${getStatusColor(item.status)} disabled:opacity-80`}
+                                          className={`w-full text-sm font-semibold rounded p-2 border outline-none cursor-pointer ${getStatusColor(item.status)} disabled:opacity-80 disabled:cursor-not-allowed`}
                                         >
                                           {STATUS_OPTIONS.map(opt => (
                                             <option key={opt} value={opt} className="bg-white text-gray-900">{opt}</option>
