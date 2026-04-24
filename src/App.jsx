@@ -278,7 +278,8 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [expandedSubdomains, setExpandedSubdomains] = useState({});
-  const [academicYear, setAcademicYear] = useState('2026-2027');
+  const [academicYear, setAcademicYear] = useState('');
+  const [fieldworkDomainFilter, setFieldworkDomainFilter] = useState('All');
   
   // Auth State
   const [session, setSession] = useState(null);
@@ -363,6 +364,12 @@ export default function App() {
   // 1. Initial Load from Supabase (with fallback to local data)
   useEffect(() => {
     if (!isAuthenticated && !isPublicReport) {
+      setLoading(false);
+      return;
+    }
+
+    if (!academicYear) {
+      setData([]);
       setLoading(false);
       return;
     }
@@ -934,10 +941,10 @@ export default function App() {
             <label className="text-xs text-slate-400 mb-1 block">Academic Year</label>
             <select 
               value={academicYear}
-              disabled={!isAdmin}
               onChange={(e) => setAcademicYear(e.target.value)}
-              className="w-full bg-slate-800 text-white text-sm rounded border border-slate-700 p-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:opacity-50"
+              className="w-full bg-slate-800 text-white text-sm rounded border border-slate-700 p-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
+              <option value="" disabled>Select Year</option>
               {ACADEMIC_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
@@ -1035,8 +1042,46 @@ export default function App() {
               </div>
             </header>
 
+            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-wrap items-center gap-6 mb-8">
+              <div className="flex items-center space-x-2 text-gray-500 font-medium">
+                <Filter className="w-5 h-5" />
+                <span>Filters:</span>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <label className="text-sm text-gray-600">Academic Year:</label>
+                <select 
+                  value={academicYear} 
+                  onChange={(e) => setAcademicYear(e.target.value)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 p-2"
+                >
+                  <option value="" disabled>Select Year</option>
+                  {ACADEMIC_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <label className="text-sm text-gray-600">Domain:</label>
+                <select 
+                  value={fieldworkDomainFilter} 
+                  onChange={(e) => setFieldworkDomainFilter(e.target.value)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 p-2 max-w-xs"
+                >
+                  <option value="All">All Domains</option>
+                  {data.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {!academicYear ? (
+              <div className="text-center py-20 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <AlertCircle className="w-12 h-12 text-blue-400 mx-auto mb-3" />
+                <h3 className="text-xl font-bold text-gray-800">No Academic Year Selected</h3>
+                <p className="text-gray-500 mt-2">Please select an academic year from the filters above to begin.</p>
+              </div>
+            ) : (
             <div className="space-y-8">
-              {data.map(domain => (
+              {data.filter(domain => fieldworkDomainFilter === 'All' || domain.id === fieldworkDomainFilter).map(domain => (
                 <div key={domain.id} className="mb-8">
                   <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-slate-200">
                     {isAdmin ? (
@@ -1216,6 +1261,7 @@ export default function App() {
                 </div>
               )}
             </div>
+            )}
           </div>
         )}
 
